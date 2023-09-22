@@ -97,7 +97,7 @@ const Drawer = styled(MuiDrawer, {
 export default function MiniDrawer() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
-    React.useState<null | HTMLElement>(null);
+  React.useState<null | HTMLElement>(null);
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const isMenuOpen = Boolean(anchorEl);
