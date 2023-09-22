@@ -1,14 +1,9 @@
+import {EmployeeLeave} from "../Model/EmployeeLeave"
 export interface LeaveType {
   
     leaveTypeId :number;
     leaveTypeName: string;
   //leaveCount: number;
-}
-export interface EmployeeLeave {
-  
-    leaveTypeId :number;
-    employeeId: number;
-    balanceLeave: number;
 }
 
 export function GetLeaveType(): LeaveType[] {
