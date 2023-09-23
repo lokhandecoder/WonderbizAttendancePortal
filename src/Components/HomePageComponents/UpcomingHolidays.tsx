@@ -6,7 +6,6 @@ import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
 import UpcomingTable from "../HomePageComponents/UpcomingTable";
 
-
 function UpcomingHolidays() {
   interface Holiday {
     date: string;
@@ -66,28 +65,11 @@ function UpcomingHolidays() {
 
   return (
     <Card sx={{ p: 1, boxShadow: 4, mt: 5 }}>
-      <Typography variant="h6" noWrap component="div">
+      <Typography variant="h5" sx={{textAlign: "center"}}>
         Upcoming Holidays
       </Typography>
-
       <CardContent>
         <UpcomingTable />
-        {/* <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Holidays</th>
-            </tr>
-          </thead>
-          <tbody>
-            {holidays.map((holiday, index) => (
-              <tr key={index}>
-                <td>{holiday.date}</td>
-                <td>{holiday.holiday}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table> */}
       </CardContent>
     </Card>
   );

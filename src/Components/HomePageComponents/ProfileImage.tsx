@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent } from "react";
 import "../../Resources/Styles/HomePageCSS/Profile.css";
 
 const ProfileImage: React.FC = () => {

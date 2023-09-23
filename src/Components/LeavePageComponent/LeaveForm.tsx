@@ -12,7 +12,7 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { GetEmployeeLeave, GetLeaveType } from "../../Database/LeaveType";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -40,35 +40,43 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
     difference: 1,
     balanceLeave: 0,
   });
+  const isWeekend = (date: Dayjs) => {
+    const day = date.day();
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    onSubmit(formData);
-    console.log(formData);
+    return day === 0 || day === 6;
   };
 
-  const handleClear = () => {
-    setFormData({
-      leaveType: 0,
-      startDate: todayDate,
-      endDate: todayDate,
-      leaveReason: "",
-      difference: 0,
-      balanceLeave: 0,
-    });
-  };
+  const datetype = [
+    {
+      label: "Start Date",
+      date: "{formData.startDate}",
+      handleDateChange: `"startDate"`,
+    },
+    {
+      label: "End Date",
+      date: "{formData.endDate}",
+      handleDateChange: `"endDate"`,
+    },
+  ];
+
   const {
     handleSelectChange,
     handleInputChange,
     handleDateChange,
+    handleClear,
+    differenceChecker,
     GetBalanceLeaveByLeaveTypeId,
-  } = LeaveApplyUtilities(formData, setFormData);
+    handleSubmit,
+  } = LeaveApplyUtilities(formData, setFormData, todayDate, onSubmit);
+  useEffect(() => {
+    differenceChecker();
+  }, [handleDateChange]);
 
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <Card sx={{ minWidth: 275 }}>
-          <h1>Apply for Leave</h1>
+        <Card sx={{ minWidth: 275, mt: 5, boxShadow: 5 }}>
+          <h1 style={{ marginLeft: "1%" }}>Apply for Leave</h1>
           <CardContent>
             <Box sx={{ width: "100%" }}>
               <Grid
@@ -104,6 +112,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                       <FormControl fullWidth>
                         <DatePicker
                           label="Start Date"
+                          shouldDisableDate={isWeekend}
                           value={
                             formData.startDate
                               ? dayjs.utc(formData.startDate)
@@ -125,6 +134,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                       <FormControl fullWidth>
                         <DatePicker
                           label="End Date"
+                          shouldDisableDate={isWeekend}
                           value={
                             formData.endDate
                               ? dayjs.utc(formData.endDate)

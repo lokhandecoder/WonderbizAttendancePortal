@@ -8,7 +8,11 @@ import "../../Resources/Styles/HomePageCSS/Profile.css";
 import ProfileImage from "./ProfileImage";
 import Grid from "@mui/material/Grid";
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
+import { GetEmployes } from "../../Database/EmployeeServices";
+import MainCard from "./MainCard";
 
+const employee = GetEmployes();
+console.log(employee);
 function ProfileCard() {
   return (
     <Card sx={{  p: 1, boxShadow: 4, mt: 5 }}>
@@ -16,19 +20,7 @@ function ProfileCard() {
         <div id="container">
           <Grid container spacing={2}>
             <Grid item xs={8}>
-              <div className="product-details">
-                <h1>Welcome, Employee Name</h1>
-                <span className="hint-star star">
-                  <i className="fa fa-star" aria-hidden="true" />
-                  <i className="fa fa-star" aria-hidden="true" />
-                  <i className="fa fa-star" aria-hidden="true" />
-                  <i className="fa fa-star" aria-hidden="true" />
-                  <i className="fa fa-star-o" aria-hidden="true" />
-                </span>
-                <h3>Designation</h3>
-                <h3>Software Engineer</h3>
-                <h3>abc@wonderbiz.in</h3>
-              </div>
+              <MainCard />
             </Grid>
             <Grid item xs={4} >
               <ProfileImage />

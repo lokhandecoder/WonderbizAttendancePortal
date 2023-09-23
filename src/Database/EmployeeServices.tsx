@@ -3,43 +3,30 @@ export interface Employee {
   firstName: string;
   lastName: string;
   gender: string;
-  jobTitle: string;
   designationId: number;
-  designation: {
-    designationName: string;
-    designationCode: string;
-    isActive: Boolean;
-  };
+  designationName: string;
   isActive : Boolean;
 }
 export function GetEmployes(): Employee[] {
   const employees: Employee[] = [
-    // {
-    //   employeeId: "101",
-    //   firstName: "John",
-    //   lastName: "Doe",
-    //   gender: "",
-    //   designationId: 1,
-    //   designation: {
-    //     designationName: "Manager",
-    //     designationCode: "MGR",
-    //     isActive: true,
-    //   },
-    //   isActive: true,
-    // },
-    // {
-    //   employeeId: "101",
-    //   firstName: "John",
-    //   lastName: "Doe",
-    //   gender: "",
-    //   designationId: 1,
-    //   designation: {
-    //     designationName: "Manager",
-    //     designationCode: "MGR",
-    //     isActive: true,
-    //   },
-    //   isActive: true,
-    // },
+    {
+      employeeId: "101",
+      firstName: "John",
+      lastName: "Doe",
+      gender: "Male",
+      designationId: 1,
+      designationName: "string",
+      isActive: true,
+    },
+    {
+      employeeId: "101",
+      firstName: "John",
+      lastName: "Doe",
+      gender: "Male",
+      designationId: 1,
+      designationName: "string",
+      isActive: true,
+    },
   ];
 
   return employees;

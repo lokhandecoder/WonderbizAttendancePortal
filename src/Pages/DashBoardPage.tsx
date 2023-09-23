@@ -16,7 +16,6 @@ function DashBoardPage() {
       <LayoutComponent>
         <Grid container spacing={2}>
           <Grid item xs={8}>
-            {/* <Paper elevation={4} /> */}
             <ProfileCard />
             <Box height={40} />
             <LeavesCard />
