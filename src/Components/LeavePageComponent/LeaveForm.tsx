@@ -6,7 +6,6 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -20,6 +19,10 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import LeaveApplyUtilities from "../../Utilities/LeaveApplyUtilities";
 import utc from "dayjs/plugin/utc"; // Import the UTC plugin for Dayjs
 import { LeaveFormData } from "../../Model/LeaveFormData";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+// import {MuiAlert} from '@mui/material';
+
 dayjs.extend(utc); // Extend Dayjs with UTC plugin
 interface LeaveFormProps {
   onSubmit: (formData: LeaveFormData) => void;
@@ -31,6 +34,15 @@ console.log(employee);
 const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
   const today = dayjs();
   const todayDate = today.toDate();
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [submitMessageOpen, setsubmitMessageOpen] = useState(false);
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
+  const handleCloseSubmitMessage = () => {
+    setsubmitMessageOpen(false);
+  };
 
   const [formData, setFormData] = useState<LeaveFormData>({
     leaveType: 1,
@@ -64,13 +76,20 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
     handleInputChange,
     handleDateChange,
     handleClear,
-    differenceChecker,
-    GetBalanceLeaveByLeaveTypeId,
+    Test,
     handleSubmit,
-  } = LeaveApplyUtilities(formData, setFormData, todayDate, onSubmit);
+  } = LeaveApplyUtilities(
+    formData,
+    setFormData,
+    todayDate,
+    onSubmit,
+    setSnackbarOpen,
+    setsubmitMessageOpen
+  );
+
   useEffect(() => {
-    differenceChecker();
-  }, [handleDateChange]);
+    Test();
+  }, [formData.leaveType, formData.endDate, formData.startDate]);
 
   return (
     <>
@@ -106,7 +125,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                     )}
                   </FormControl>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={2}>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DemoContainer components={["DatePicker"]}>
                       <FormControl fullWidth>
@@ -128,7 +147,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                     </DemoContainer>
                   </LocalizationProvider>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={2}>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DemoContainer components={["DatePicker"]}>
                       <FormControl fullWidth>
@@ -153,12 +172,30 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                 <Grid item xs={2}>
                   <TextField
                     sx={{ mt: 1 }}
-                    id="AvailableLeaves"
-                    name="AvailableLeaves"
-                    label="AvailableLeaves"
+                    id="AppliedLeaves"
+                    name="AppliedLeaves"
+                    label="Applied Leaves"
                     disabled
+                    error={formData.balanceLeave < formData.difference}
                     value={formData.difference}
-                    // onChange={handleInputChange}
+                    fullWidth
+                  />
+                  {formData.balanceLeave <= formData.difference ? (
+                    <span style={{ color: "red" }}>
+                      You dont have sufficient leaves
+                    </span>
+                  ) : (
+                    <span></span>
+                  )}
+                </Grid>
+                <Grid item xs={2}>
+                  <TextField
+                    sx={{ mt: 1 }}
+                    id="BalanceLeaves"
+                    name="BalanceLeaves"
+                    label="Balance Leaves"
+                    disabled
+                    value={formData.balanceLeave - formData.difference}
                     fullWidth
                   />
                 </Grid>
@@ -195,6 +232,34 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
             </Button>
           </CardActions>
         </Card>
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000} // Adjust the duration as needed
+          onClose={handleCloseSnackbar}
+        >
+          <Alert
+            elevation={6}
+            variant="filled"
+            severity="error"
+            onClose={handleCloseSnackbar}
+          >
+            You do not have sufficient leaves.
+          </Alert>
+        </Snackbar>
+        <Snackbar
+          open={submitMessageOpen}
+          autoHideDuration={6000} // Adjust the duration as needed
+          onClose={handleCloseSubmitMessage}
+        >
+          <Alert
+            elevation={6}
+            variant="filled"
+            severity="success"
+            onClose={handleCloseSubmitMessage}
+          >
+            Leave Applied Successfully
+          </Alert>
+        </Snackbar>
       </form>
     </>
   );

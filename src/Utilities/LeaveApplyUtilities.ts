@@ -2,16 +2,26 @@ import { SelectChangeEvent } from "@mui/material/Select";
 import { EmployeeLeave } from "../Model/EmployeeLeave";
 import { GetEmployeeLeave } from "../Database/LeaveType";
 import { LeaveFormData } from "../Model/LeaveFormData";
+import { GetLeaveHistory } from "../Database/LeaveHIstory";
 const LeaveApplyUtilities = (
   formData: any,
   setFormData: React.Dispatch<any>,
   todayDate: any,
-  onSubmit: any
+  onSubmit: any,
+  setSnackbarOpen: any,
+  setsubmitMessageOpen: any,
 ) => {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    onSubmit(formData);
-    console.log(formData);
+    if (formData.balanceLeave < formData.difference) {
+      console.log("Error: You do not have sufficient leaves.");
+      setSnackbarOpen(true);
+    } else {
+      onSubmit(formData);
+      setsubmitMessageOpen(true)
+    }
+    const list = GetLeaveHistory();
+    list.push(formData);
   };
 
   const handleSelectChange = (event: SelectChangeEvent<string | number>) => {
@@ -23,7 +33,7 @@ const LeaveApplyUtilities = (
       ...formData,
       leaveType: value as number,
     });
-    Test();
+    // Test();
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,6 +87,7 @@ const LeaveApplyUtilities = (
     const endDate = date2.getDay();
     const weekends = Math.floor((differenceInDays + startDate) / 7) * 2;
     differenceInDays -= weekends;
+    const finaldays = differenceInDays + 1;
     if (startDate === 6) differenceInDays--;
     if (startDate === 0) differenceInDays--;
     if (endDate === 6) differenceInDays--;
@@ -86,10 +97,10 @@ const LeaveApplyUtilities = (
     } else {
       setFormData((prevFormData: LeaveFormData) => ({
         ...prevFormData,
-        difference: differenceInDays + 1,
+        difference: finaldays,
       }));
       // console.log("Difference in days (excluding weekends):", differenceInDays);
-      return differenceInDays;
+      return finaldays;
     }
   };
 
@@ -102,7 +113,8 @@ const LeaveApplyUtilities = (
       ...prevFormData,
       balanceLeave: balanceLeave,
     }));
-    console.log(formData);
+    differenceChecker();
+    console.log({ formData });
   };
 
   return {
@@ -112,6 +124,7 @@ const LeaveApplyUtilities = (
     GetBalanceLeaveByLeaveTypeId,
     handleClear,
     handleSubmit,
+    Test,
     differenceChecker,
   };
 };
