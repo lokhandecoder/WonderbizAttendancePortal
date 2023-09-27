@@ -4,6 +4,7 @@ import { GetEmployeeLeave } from "../Database/LeaveType";
 import { LeaveFormData } from "../Model/LeaveFormData";
 import { GetLeaveHistory } from "../Database/LeaveHIstory";
 import { Console } from "console";
+import axios from "axios";
 const LeaveApplyUtilities = (
   formData: any,
   setFormData: React.Dispatch<any>,
@@ -13,38 +14,41 @@ const LeaveApplyUtilities = (
   setsubmitMessageOpen: any,
   setsnackbarDateValid: any,
   setsnackLeavetype: any,
+  difference: any,
+  setdifference: any,
+  balanceLeave: any,
+  setBalanceLeave: any,
 ) => {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     // IsValidDate();
-      if (formData.balanceLeave < formData.difference ) {
-        console.log("Error: You do not have sufficient leaves.");
-        setSnackbarOpen(true);
-      }else if (!IsValidDate()){
-        setsnackbarDateValid(true)
-        console.log("Error : Endate should be greater than start end")
-      } else if (formData.leaveType < 1){
-        setsnackLeavetype(true)
-        console.log("Select tthe type")
-      }
-      else {
-        onSubmit(formData);
-        setsubmitMessageOpen(true)
-      }
+    if (balanceLeave < difference) {
+      console.log("Error: You do not have sufficient leaves.");
+      setSnackbarOpen(true);
+    } else if (!IsValidDate()) {
+      setsnackbarDateValid(true);
+      console.log("Error : Endate should be greater than start end");
+    } else if (formData.leaveTypeId < 0) {
+      setsnackLeavetype(true);
+      console.log("Select tthe type");
+    } else {
+      onSubmit(formData);
+      axios.post("https://leaveapplication14.azurewebsites.net/api/employee/CreateAppliedLeave",formData).then((res) => console.log("Send", res)).catch((e) => console.log("BAd",e));
+      setsubmitMessageOpen(true);
+    }
     // const list = GetLeaveHistory();
     // list.push(formData);
   };
 
   const IsValidDate = () => {
-    if(formData.endDate >= formData.startDate){
-      console.log("valid")
+    if (formData.endDate >= formData.startDate) {
+      console.log("valid");
       return true;
-    }else{
-      console.log("invalid")
+    } else {
+      console.log("invalid");
       return false;
     }
-
-  }
+  };
 
   const handleSelectChange = (event: SelectChangeEvent<string | number>) => {
     const value =
@@ -53,7 +57,7 @@ const LeaveApplyUtilities = (
         : event.target.value;
     setFormData({
       ...formData,
-      leaveType: value as number,
+      leaveTypeId: value as number,
     });
     // Test();
   };
@@ -78,13 +82,12 @@ const LeaveApplyUtilities = (
 
   const handleClear = () => {
     setFormData({
-      leaveType: 0,
+      leaveTypeId: 0,
       startDate: todayDate,
       endDate: todayDate,
       leaveReason: "",
-      difference: 0,
-      balanceLeave: 0,
     });
+    setdifference(0)
   };
 
   const GetBalanceLeaveByLeaveTypeId = (
@@ -117,31 +120,28 @@ const LeaveApplyUtilities = (
     if (formData.startDate > formData.endDate) {
       return 0;
     } else {
-      setFormData((prevFormData: LeaveFormData) => ({
-        ...prevFormData,
-        difference: finaldays,
-      }));
-      // console.log("Difference in days (excluding weekends):", differenceInDays);
+      setdifference(finaldays)
+      // setFormData((prevFormData: LeaveFormData) => ({
+      //   ...prevFormData,
+      //   difference: finaldays,
+      // }));
+      console.log("Difference in days (excluding weekends):", finaldays);
       return finaldays;
     }
   };
 
   const Test = () => {
-  
-    if(formData.leaveType > 0){
-
+    if (formData.leaveTypeId > 0) {
       const balanceLeave = GetBalanceLeaveByLeaveTypeId(
         GetEmployeeLeave(),
-        formData.leaveType
+        formData.leaveTypeId
       );
       setFormData((prevFormData: LeaveFormData) => ({
         ...prevFormData,
         balanceLeave: balanceLeave,
       }));
       differenceChecker();
-
-
-    }else{
+    } else {
       setFormData((prevFormData: LeaveFormData) => ({
         ...prevFormData,
         difference: 0,

@@ -10,6 +10,7 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import axios from "axios";
 import { GetEmployeeLeave, GetLeaveType } from "../../Database/LeaveType";
 import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -24,6 +25,7 @@ import Alert from "@mui/material/Alert";
 // import {MuiAlert} from '@mui/material';
 import { DateValidationError } from "@mui/x-date-pickers/models";
 import { GetLeaveData } from "../../Database/LeaveData";
+import { API_URL } from "../../Services/APIConfig";
 dayjs.extend(utc); // Extend Dayjs with UTC plugin
 interface LeaveFormProps {
   onSubmit: (formData: LeaveFormData) => void;
@@ -39,6 +41,8 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
   const [snackbarDateValid, setsnackbarDateValid] = useState(false);
   const [snackbarLeavetype, setsnackLeavetype] = useState(false);
   const [submitMessageOpen, setsubmitMessageOpen] = useState(false);
+  const [difference, setdifference] = useState(0);
+  const [balanceLeave, setBalanceLeave] = useState(0);
   // const [error, setError] = React.useState<DateValidationError | null>(null);
 
   const handleLeaveType = () => {
@@ -54,20 +58,29 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
     setsubmitMessageOpen(false);
   };
 
+  useEffect(() => {
+    axios
+      .get(API_URL+ "GetSingleAppliedLeave1")
+      .then((res) => console.log("API ", res.data.data))
+      .catch((e) => console.log("API ERROR", e));
+  }, []);
 
   const [formData, setFormData] = useState<LeaveFormData>({
-    id: 0,
-    leaveType: 0,
+    // id: 0,
+    // leaveType: 0,
+    // startDate: todayDate,
+    // endDate: todayDate,
+    // leaveReason: "",
+    // difference: 0,
+    // balanceLeave: 0,
+
+    leaveTypeId: 0,
+    leaveType: null,
     startDate: todayDate,
     endDate: todayDate,
     leaveReason: "",
-    difference: 0,
-    balanceLeave: 0,
   });
-  // const [formData, setFormData] = useState(data);
   console.log(formData);
-  const data = GetLeaveData();
-  console.log(data);
   const isWeekend = (date: Dayjs) => {
     const day = date.day();
 
@@ -90,29 +103,34 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
     setsubmitMessageOpen,
     setsnackbarDateValid,
     setsnackLeavetype,
+    difference,
+    setdifference,
+    balanceLeave,
+    setBalanceLeave
+
   );
 
   useEffect(() => {
     Test();
-  }, [formData.leaveType, formData.endDate, formData.startDate]);
+  }, [formData.leaveTypeId, formData.endDate, formData.startDate]);
   const [error, setError] = React.useState<DateValidationError | null>(null);
 
-  const errorMessage = React.useMemo(() => {
-    switch (error) {
-      case "maxDate":
-      case "minDate": {
-        return "Please select a date in the first quarter of 2022";
-      }
+  // const errorMessage = React.useMemo(() => {
+  //   switch (error) {
+  //     case "maxDate":
+  //     case "minDate": {
+  //       return "Please select a date in the first quarter of 2022";
+  //     }
 
-      case "invalidDate": {
-        return "Your date is not valid";
-      }
+  //     case "invalidDate": {
+  //       return "Your date is not valid";
+  //     }
 
-      default: {
-        return "";
-      }
-    }
-  }, [error]);
+  //     default: {
+  //       return "";
+  //     }
+  //   }
+  // }, [error]);
   return (
     <>
       <form onSubmit={handleSubmit}>
@@ -131,7 +149,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                     <Select
                       labelId="leaveType"
                       id="demo-simple-select"
-                      value={formData.leaveType}
+                      value={formData.leaveTypeId}
                       label="leaveType"
                       name="leaveType"
                       onChange={handleSelectChange}
@@ -207,7 +225,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                     label="Availabe Leaves"
                     aria-readonly
                     // error={formData.balanceLeave < formData.difference}
-                    value={formData.balanceLeave}
+                    value={balanceLeave}
                     fullWidth
                   />
                 </Grid>
@@ -218,11 +236,11 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                     name="AppliedLeaves"
                     label="Applied Leaves"
                     aria-readonly
-                    error={formData.balanceLeave < formData.difference}
-                    value={formData.difference}
+                    error={balanceLeave < difference}
+                    value={difference}
                     fullWidth
                   />
-                  {formData.balanceLeave < formData.difference ? (
+                  {balanceLeave < difference ? (
                     <span style={{ color: "red" }}>
                       You dont have sufficient leaves
                     </span>
@@ -237,7 +255,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                     name="BalanceLeaves"
                     label="Balance Leaves"
                     aria-readonly
-                    value={formData.balanceLeave - formData.difference}
+                    value={balanceLeave - difference}
                     fullWidth
                   />
                 </Grid>

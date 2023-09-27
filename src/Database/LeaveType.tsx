@@ -8,13 +8,14 @@ export function GetLeaveType(): LeaveType[] {
   const leaveType: LeaveType[] = [
     {
       leaveTypeId: 1,
-      leaveTypeName: "Sick Leave",
+      leaveTypeName: "Vacation",
     },
     {
       leaveTypeId: 2,
-      leaveTypeName: "Casual Leave",
+      leaveTypeName: "Sick Leave",
     },
-    { leaveTypeId: 3, leaveTypeName: "Paternity/Maternity Leave" },
+    { leaveTypeId: 3, leaveTypeName: "Personal Leave" },
+    { leaveTypeId: 4, leaveTypeName: "Maternity/Paternity Leave" },
   ];
 
   return leaveType;

@@ -8,10 +8,10 @@ import "../../Resources/Styles/HomePageCSS/Profile.css";
 import ProfileImage from "./ProfileImage";
 import Grid from "@mui/material/Grid";
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
-import { GetEmployes } from "../../Database/EmployeeServices";
+import { GetEmployees } from "../../Database/EmployeeServices";
 import MainCard from "./MainCard";
 
-const employee = GetEmployes();
+const employee = GetEmployees();
 console.log(employee);
 function ProfileCard() {
   return (
