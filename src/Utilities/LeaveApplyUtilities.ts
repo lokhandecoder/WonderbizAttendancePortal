@@ -3,6 +3,7 @@ import { EmployeeLeave } from "../Model/EmployeeLeave";
 import { GetEmployeeLeave } from "../Database/LeaveType";
 import { LeaveFormData } from "../Model/LeaveFormData";
 import { GetLeaveHistory } from "../Database/LeaveHIstory";
+import { Console } from "console";
 const LeaveApplyUtilities = (
   formData: any,
   setFormData: React.Dispatch<any>,
@@ -10,19 +11,40 @@ const LeaveApplyUtilities = (
   onSubmit: any,
   setSnackbarOpen: any,
   setsubmitMessageOpen: any,
+  setsnackbarDateValid: any,
+  setsnackLeavetype: any,
 ) => {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (formData.balanceLeave < formData.difference) {
-      console.log("Error: You do not have sufficient leaves.");
-      setSnackbarOpen(true);
-    } else {
-      onSubmit(formData);
-      setsubmitMessageOpen(true)
-    }
-    const list = GetLeaveHistory();
-    list.push(formData);
+    // IsValidDate();
+      if (formData.balanceLeave < formData.difference ) {
+        console.log("Error: You do not have sufficient leaves.");
+        setSnackbarOpen(true);
+      }else if (!IsValidDate()){
+        setsnackbarDateValid(true)
+        console.log("Error : Endate should be greater than start end")
+      } else if (formData.leaveType < 1){
+        setsnackLeavetype(true)
+        console.log("Select tthe type")
+      }
+      else {
+        onSubmit(formData);
+        setsubmitMessageOpen(true)
+      }
+    // const list = GetLeaveHistory();
+    // list.push(formData);
   };
+
+  const IsValidDate = () => {
+    if(formData.endDate >= formData.startDate){
+      console.log("valid")
+      return true;
+    }else{
+      console.log("invalid")
+      return false;
+    }
+
+  }
 
   const handleSelectChange = (event: SelectChangeEvent<string | number>) => {
     const value =
@@ -105,16 +127,27 @@ const LeaveApplyUtilities = (
   };
 
   const Test = () => {
-    const balanceLeave = GetBalanceLeaveByLeaveTypeId(
-      GetEmployeeLeave(),
-      formData.leaveType
-    );
-    setFormData((prevFormData: LeaveFormData) => ({
-      ...prevFormData,
-      balanceLeave: balanceLeave,
-    }));
-    differenceChecker();
-    console.log({ formData });
+  
+    if(formData.leaveType > 0){
+
+      const balanceLeave = GetBalanceLeaveByLeaveTypeId(
+        GetEmployeeLeave(),
+        formData.leaveType
+      );
+      setFormData((prevFormData: LeaveFormData) => ({
+        ...prevFormData,
+        balanceLeave: balanceLeave,
+      }));
+      differenceChecker();
+
+
+    }else{
+      setFormData((prevFormData: LeaveFormData) => ({
+        ...prevFormData,
+        difference: 0,
+        balanceLeave: 0,
+      }));
+    }
   };
 
   return {

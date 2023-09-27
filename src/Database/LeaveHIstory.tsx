@@ -11,6 +11,7 @@ const todayDate = today.toDate();
 // console.log(completeday);
 
 export interface LeaveHistory {
+  id: number;
   leaveType: number;
   startDate: Date | null;
   endDate: Date | null;
@@ -21,6 +22,7 @@ export interface LeaveHistory {
 export function GetLeaveHistory(): LeaveHistory[] {
   const leavehistory: LeaveHistory[] = [
     {
+      id: 1,
       leaveType: 1,
       startDate: todayDate,
       endDate: todayDate,
@@ -29,6 +31,7 @@ export function GetLeaveHistory(): LeaveHistory[] {
       balanceLeave: 0,
     },
     {
+      id: 2,
       leaveType: 2,
       startDate: todayDate,
       endDate: todayDate,

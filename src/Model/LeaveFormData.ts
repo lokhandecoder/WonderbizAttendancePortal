@@ -1,4 +1,5 @@
 export interface LeaveFormData {
+  id : number;
   leaveType: number;
   startDate: Date | null;
   endDate: Date | null;
@@ -6,3 +7,5 @@ export interface LeaveFormData {
   difference: number;
   balanceLeave: number;
 }
+
+

@@ -2,7 +2,6 @@ import { EmployeeLeave } from "../Model/EmployeeLeave";
 export interface LeaveType {
   leaveTypeId: number;
   leaveTypeName: string;
-  //leaveCount: number;
 }
 
 export function GetLeaveType(): LeaveType[] {

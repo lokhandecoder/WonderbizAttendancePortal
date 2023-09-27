@@ -22,7 +22,8 @@ import { LeaveFormData } from "../../Model/LeaveFormData";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 // import {MuiAlert} from '@mui/material';
-
+import { DateValidationError } from "@mui/x-date-pickers/models";
+import { GetLeaveData } from "../../Database/LeaveData";
 dayjs.extend(utc); // Extend Dayjs with UTC plugin
 interface LeaveFormProps {
   onSubmit: (formData: LeaveFormData) => void;
@@ -35,41 +36,43 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
   const today = dayjs();
   const todayDate = today.toDate();
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarDateValid, setsnackbarDateValid] = useState(false);
+  const [snackbarLeavetype, setsnackLeavetype] = useState(false);
   const [submitMessageOpen, setsubmitMessageOpen] = useState(false);
+  // const [error, setError] = React.useState<DateValidationError | null>(null);
 
+  const handleLeaveType = () => {
+    setsnackLeavetype(false);
+  };
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
+  };
+  const handleCloseDateValid = () => {
+    setsnackbarDateValid(false);
   };
   const handleCloseSubmitMessage = () => {
     setsubmitMessageOpen(false);
   };
 
+
   const [formData, setFormData] = useState<LeaveFormData>({
-    leaveType: 1,
+    id: 0,
+    leaveType: 0,
     startDate: todayDate,
     endDate: todayDate,
     leaveReason: "",
-    difference: 1,
+    difference: 0,
     balanceLeave: 0,
   });
+  // const [formData, setFormData] = useState(data);
+  console.log(formData);
+  const data = GetLeaveData();
+  console.log(data);
   const isWeekend = (date: Dayjs) => {
     const day = date.day();
 
     return day === 0 || day === 6;
   };
-
-  const datetype = [
-    {
-      label: "Start Date",
-      date: "{formData.startDate}",
-      handleDateChange: `"startDate"`,
-    },
-    {
-      label: "End Date",
-      date: "{formData.endDate}",
-      handleDateChange: `"endDate"`,
-    },
-  ];
 
   const {
     handleSelectChange,
@@ -84,13 +87,32 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
     todayDate,
     onSubmit,
     setSnackbarOpen,
-    setsubmitMessageOpen
+    setsubmitMessageOpen,
+    setsnackbarDateValid,
+    setsnackLeavetype,
   );
 
   useEffect(() => {
     Test();
   }, [formData.leaveType, formData.endDate, formData.startDate]);
+  const [error, setError] = React.useState<DateValidationError | null>(null);
 
+  const errorMessage = React.useMemo(() => {
+    switch (error) {
+      case "maxDate":
+      case "minDate": {
+        return "Please select a date in the first quarter of 2022";
+      }
+
+      case "invalidDate": {
+        return "Your date is not valid";
+      }
+
+      default: {
+        return "";
+      }
+    }
+  }, [error]);
   return (
     <>
       <form onSubmit={handleSubmit}>
@@ -103,7 +125,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                 rowSpacing={1}
                 columnSpacing={{ xs: 1, sm: 2, md: 3 }}
               >
-                <Grid item xs={3}>
+                <Grid item xs={2}>
                   <FormControl fullWidth sx={{ mt: 1 }}>
                     <InputLabel id="leaveType">leaveType</InputLabel>
                     <Select
@@ -114,15 +136,13 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                       name="leaveType"
                       onChange={handleSelectChange}
                     >
+                      <MenuItem value={0}>None</MenuItem>
                       {LeaveType.map((type, index) => (
                         <MenuItem key={index} value={type.leaveTypeId}>
                           {type.leaveTypeName}
                         </MenuItem>
                       ))}
                     </Select>
-                    {formData?.balanceLeave !== 0 && (
-                      <span>Available days: {formData?.balanceLeave}</span>
-                    )}
                   </FormControl>
                 </Grid>
                 <Grid item xs={2}>
@@ -152,8 +172,18 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                     <DemoContainer components={["DatePicker"]}>
                       <FormControl fullWidth>
                         <DatePicker
+                          //  onError={(newError) => setError(newError)}
+                          //  slotProps={{
+                          //    textField: {
+                          //      helperText: errorMessage,
+                          //    },
+                          //  }}
+
+                          //  minDate={dayjs.utc(formData.startDate)}
+                          //  maxDate={dayjs.utc(formData.endDate)}
                           label="End Date"
                           shouldDisableDate={isWeekend}
+                          // minDate={today}
                           value={
                             formData.endDate
                               ? dayjs.utc(formData.endDate)
@@ -172,15 +202,27 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                 <Grid item xs={2}>
                   <TextField
                     sx={{ mt: 1 }}
+                    id="AvailabeLeaves"
+                    name="AvailabeLeaves"
+                    label="Availabe Leaves"
+                    aria-readonly
+                    // error={formData.balanceLeave < formData.difference}
+                    value={formData.balanceLeave}
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={2}>
+                  <TextField
+                    sx={{ mt: 1 }}
                     id="AppliedLeaves"
                     name="AppliedLeaves"
                     label="Applied Leaves"
-                    disabled
+                    aria-readonly
                     error={formData.balanceLeave < formData.difference}
                     value={formData.difference}
                     fullWidth
                   />
-                  {formData.balanceLeave <= formData.difference ? (
+                  {formData.balanceLeave < formData.difference ? (
                     <span style={{ color: "red" }}>
                       You dont have sufficient leaves
                     </span>
@@ -194,7 +236,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                     id="BalanceLeaves"
                     name="BalanceLeaves"
                     label="Balance Leaves"
-                    disabled
+                    aria-readonly
                     value={formData.balanceLeave - formData.difference}
                     fullWidth
                   />
@@ -258,6 +300,34 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
             onClose={handleCloseSubmitMessage}
           >
             Leave Applied Successfully
+          </Alert>
+        </Snackbar>
+        <Snackbar
+          open={snackbarDateValid}
+          autoHideDuration={6000} // Adjust the duration as needed
+          onClose={handleCloseDateValid}
+        >
+          <Alert
+            elevation={6}
+            variant="filled"
+            severity="error"
+            onClose={handleCloseDateValid}
+          >
+            Date is Invalid
+          </Alert>
+        </Snackbar>
+        <Snackbar
+          open={snackbarLeavetype}
+          autoHideDuration={6000} // Adjust the duration as needed
+          onClose={handleLeaveType}
+        >
+          <Alert
+            elevation={6}
+            variant="filled"
+            severity="error"
+            onClose={handleLeaveType}
+          >
+            Select Leave Type
           </Alert>
         </Snackbar>
       </form>

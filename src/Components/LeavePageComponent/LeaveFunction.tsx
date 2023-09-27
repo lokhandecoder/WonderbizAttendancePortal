@@ -12,12 +12,9 @@ export function GetDifference(formData: FormData) {
     const differenceInDays = Math.floor(
       differenceInMilliseconds / (1000 * 3600 * 24)
     );
-    //   console.log(differenceInDays);
     return differenceInDays;
   }
-  //  else {
-  //   setFormData({ ...formData, difference: 0 });
-  // }
+
 }
 
 interface clearList {
