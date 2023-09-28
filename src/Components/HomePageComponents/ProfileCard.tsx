@@ -12,7 +12,6 @@ import { GetEmployees } from "../../Database/EmployeeServices";
 import MainCard from "./MainCard";
 
 const employee = GetEmployees();
-console.log(employee);
 function ProfileCard() {
   return (
     <Card sx={{  p: 1, boxShadow: 4, mt: 5 }}>

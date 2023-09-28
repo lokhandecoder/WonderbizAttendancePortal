@@ -5,8 +5,12 @@ import { LeaveFormData } from "../Model/LeaveFormData";
 import { GetLeaveHistory } from "../Database/LeaveHIstory";
 import { Console } from "console";
 import axios from "axios";
-import { createLeaveApply } from "../Services/LeaveApplyServices";
-const LeaveApplyUtilities = (
+import {
+  UpdateLeaveApply,
+  createLeaveApply,
+} from "../Services/LeaveApplyServices";
+
+const LeaveUpdateUtilities = (
   formData: any,
   setFormData: React.Dispatch<any>,
   todayDate: any,
@@ -19,24 +23,26 @@ const LeaveApplyUtilities = (
   setdifference: any,
   balanceLeave: any,
   setBalanceLeave: any,
+  id: any
 ) => {
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleUpdate = (event: React.FormEvent) => {
     event.preventDefault();
     // IsValidDate();
     // if (balanceLeave < difference) {
     //   console.log("Error: You do not have sufficient leaves.");
     //   setSnackbarOpen(true);
-    // } 
-    // else 
-    if (!IsValidDate()) {
-      setsnackbarDateValid(true);
-      console.log("Error : Endate should be greater than start end");
-    } else if (formData.leaveTypeId < 0) {
+    // }
+    // else
+    // if (!IsValidDate()) {
+    //   setsnackbarDateValid(true);
+    //   console.log("Error : Endate should be greater than start end");
+    // } else
+    if (formData.leaveTypeId < 0) {
       setsnackLeavetype(true);
       console.log("Select tthe type");
     } else {
       onSubmit(formData);
-      createLeaveApply(formData)
+      UpdateLeaveApply(formData, id);
       // axios.post("https://leaveapplication14.azurewebsites.net/api/employee/CreateAppliedLeave",formData).then((res) => console.log("Send", res)).catch((e) => console.log("BAd",e));
       setsubmitMessageOpen(true);
     }
@@ -61,7 +67,7 @@ const LeaveApplyUtilities = (
         : event.target.value;
     setFormData({
       ...formData,
-      leaveTypeId: value as number,
+      leaveTypeId: value,
     });
     // Test();
   };
@@ -91,7 +97,7 @@ const LeaveApplyUtilities = (
       endDate: todayDate,
       leaveReason: "",
     });
-    setdifference(0)
+    setdifference(0);
   };
 
   const GetBalanceLeaveByLeaveTypeId = (
@@ -124,11 +130,11 @@ const LeaveApplyUtilities = (
     if (formData.startDate > formData.endDate) {
       return 0;
     } else {
-      setdifference(finaldays)
-      // setFormData((prevFormData: LeaveFormData) => ({
-      //   ...prevFormData,
-      //   difference: finaldays,
-      // }));
+      setdifference(finaldays);
+      //   setFormData((prevFormData: LeaveFormData) => ({
+      //     ...prevFormData,
+      //     difference: finaldays,
+      //   }));
       console.log("Difference in days (excluding weekends):", finaldays);
       return finaldays;
     }
@@ -153,16 +159,16 @@ const LeaveApplyUtilities = (
       }));
     }
   };
-
   return {
     handleSelectChange,
     handleInputChange,
     handleDateChange,
     GetBalanceLeaveByLeaveTypeId,
     handleClear,
-    handleSubmit,
+    handleUpdate,
     Test,
     differenceChecker,
   };
 };
-export default LeaveApplyUtilities;
+
+export default LeaveUpdateUtilities;

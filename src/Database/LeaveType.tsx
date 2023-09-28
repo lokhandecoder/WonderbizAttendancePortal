@@ -15,7 +15,8 @@ export function GetLeaveType(): LeaveType[] {
       leaveTypeName: "Sick Leave",
     },
     { leaveTypeId: 3, leaveTypeName: "Personal Leave" },
-    { leaveTypeId: 4, leaveTypeName: "Maternity/Paternity Leave" },
+    { leaveTypeId: 4, leaveTypeName: "Maternity Leave" },
+    { leaveTypeId: 5, leaveTypeName: "Paternity Leave" },
   ];
 
   return leaveType;

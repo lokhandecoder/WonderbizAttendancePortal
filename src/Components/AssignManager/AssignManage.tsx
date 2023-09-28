@@ -22,7 +22,6 @@ import {
 } from "@mui/material";
 
 const employee = GetEmployees();
-console.log(employee);
 
 function AssignManage() {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);

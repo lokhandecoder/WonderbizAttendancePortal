@@ -17,7 +17,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import LeaveApplyUtilities from "../../Utilities/LeaveApplyUtilities";
+import LeaveUpdateUtilities from "../../Utilities/LeaveUpdateUtilities";
 import utc from "dayjs/plugin/utc"; // Import the UTC plugin for Dayjs
 import { LeaveFormData } from "../../Model/LeaveFormData";
 import Snackbar from "@mui/material/Snackbar";
@@ -30,15 +30,15 @@ import { API_URL } from "../../Services/APIConfig";
 import {  GetLeaveApplyById } from "../../Services/LeaveApplyServices";
 dayjs.extend(utc); // Extend Dayjs with UTC plugin
 interface LeaveFormProps {
-  onSubmit: (formData: LeaveFormData) => void;
+  onSubmit: (formData: LeaveFormData, id : number) => void;
 }
 const LeaveType = GetLeaveType();
 const employee = GetEmployeeLeave();
 console.log(employee);
 
-const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
-  // const { id } = useParams(); // Get the ID from the route params
-  const today = dayjs();
+const LeaveUpdate: React.FC<LeaveFormProps> = ({ onSubmit }) => {
+    const { id } = useParams(); // Get the ID from the route params
+    const today = dayjs();
   const todayDate = today.toDate();
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarDateValid, setsnackbarDateValid] = useState(false);
@@ -76,36 +76,37 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
     return day === 0 || day === 6;
   };
 
-  // useEffect(() => {
+  useEffect(() => {
 
-  //   const fetchLeaveData = async () => {
-  //     try {
-  //       const response = await fetch(`https://leaveapplication14.azurewebsites.net/api/employee/GetSingleAppliedLeave${id}`); 
-  //       const data = await response.json();
-  //       setFormData({
-  //         leaveTypeId: data.data.leaveTypeId,
-  //         leaveType: data.data.leaveType,
-  //         startDate: data.data.startDate,
-  //         endDate: data.data.endDate,
-  //         leaveReason: data.data.leaveReason,
-  //       });
-  //     } catch (error) {
-  //       console.error("Error fetching leave data:", error);
-  //     }
-  //   };
+    const fetchLeaveData = async () => {
+      try {
+        const response = await fetch(`https://leaveapplication14.azurewebsites.net/api/employee/GetSingleAppliedLeave${id}`); 
+        const data = await response.json();
+        setFormData({
+          leaveTypeId: data.data.leaveTypeId,
+          leaveType: data.data.leaveType,
+          startDate: data.data.startDate,
+          endDate: data.data.endDate,
+          leaveReason: data.data.leaveReason,
+        });
+        console.log(data.data);
+      } catch (error) {
+        console.error("Error fetching leave data:", error);
+      }
+    };
 
-  //   if (id) {
-  //     fetchLeaveData();
-  //   }
-  // }, [id]); 
+    if (id) {
+      fetchLeaveData();
+    }
+  }, [id]); 
   const {
     handleSelectChange,
     handleInputChange,
     handleDateChange,
     handleClear,
     Test,
-    handleSubmit,
-  } = LeaveApplyUtilities(
+    handleUpdate,
+  } = LeaveUpdateUtilities(
     formData,
     setFormData,
     todayDate,
@@ -117,34 +118,18 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
     difference,
     setdifference,
     balanceLeave,
-    setBalanceLeave
+    setBalanceLeave,
+    id,
 
   );
 
   useEffect(() => {
     Test();
   }, [formData.leaveTypeId, formData.endDate, formData.startDate]);
-  const [error, setError] = React.useState<DateValidationError | null>(null);
 
-  // const errorMessage = React.useMemo(() => {
-  //   switch (error) {
-  //     case "maxDate":
-  //     case "minDate": {
-  //       return "Please select a date in the first quarter of 2022";
-  //     }
-
-  //     case "invalidDate": {
-  //       return "Your date is not valid";
-  //     }
-
-  //     default: {
-  //       return "";
-  //     }
-  //   }
-  // }, [error]);
   return (
     <>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleUpdate}>
         <Card sx={{ minWidth: 275, mt: 5, boxShadow: 5 }}>
           <h1 style={{ marginLeft: "1%" }}>Apply for Leave</h1>
           <CardContent>
@@ -291,7 +276,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
               variant="contained"
               color="primary"
             >
-              Submit
+              Update
             </Button>
             <Button
               size="large"
@@ -364,4 +349,4 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
   );
 };
 
-export default LeaveForm;
+export default LeaveUpdate;

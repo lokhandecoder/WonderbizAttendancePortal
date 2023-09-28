@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -8,18 +8,36 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { GetLeaveHistory } from "../../Database/LeaveHIstory";
 import { GetLeaveType } from "../../Database/LeaveType";
+// import { GetAllAppliedLeaves } from "../../Services/LeaveApplyServices";
+import { API_URL } from "../../Services/APIConfig";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-
-const rows = GetLeaveHistory();
+interface Row {
+  appliedLeaveTypeId: number;
+  leaveTypeId: number; // Assuming row has a leaveTypeId property
+  startDate?: string; // Assuming startDate is an optional string
+  endDate?: string; // Assuming endDate is an optional string
+  leaveReason: string;
+  difference: string; // Assuming difference is a string
+  // ... other properties you might have
+}
 const LeaveType = GetLeaveType();
 function StatusTable() {
-  const [data, SetData] = useState(rows);
+  const [data, setData] = useState<Row[]>([]); // Specify the type for data
+  const navigate = useNavigate();
 
+  const handleEdit = (appliedLeaveTypeId: number) => {
+    console.log("Edit button clicked for index:", appliedLeaveTypeId);
+    navigate("/edit/" + appliedLeaveTypeId);
+  };
 
-  const handleEdit = () => {
-
-  }
-
+  useEffect(() => {
+    axios
+      .get(API_URL + "GetAllAppliedLeaves")
+      .then((res) => setData(res.data.data))
+      .catch((e) => console.log(e));
+  }, []);
 
   return (
     <TableContainer>
@@ -35,10 +53,41 @@ function StatusTable() {
           </TableRow>
         </TableHead>
         <TableBody>
+          {data.map((row: Row, key) => (
+            <TableRow key={key}>
+              <TableCell>
+                {LeaveType.find((type) => type.leaveTypeId === row.leaveTypeId)
+                  ?.leaveTypeName || ""}
+              </TableCell>
+              <TableCell>
+                {row.startDate
+                  ? new Date(row.startDate).toISOString()
+                  : "No date available"}
+              </TableCell>
+              <TableCell>
+                {row.endDate
+                  ? new Date(row.endDate).toISOString()
+                  : "No date available"}
+              </TableCell>
+              <TableCell>{row.leaveReason}</TableCell>
+              <TableCell>{row.difference}</TableCell>
+              <TableCell>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  onClick={() => handleEdit(row.appliedLeaveTypeId)}
+                >
+                  Edit
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+        {/* <TableBody>
           {data.map((row, key) => (
             <TableRow key={key}>
               <TableCell>
-                {LeaveType.find((type) => type.leaveTypeId === row.leaveType)
+                {LeaveType.find((type) => type.leaveTypeId === row.leaveTypeId)
                   ?.leaveTypeName || ""}
               </TableCell>
               <TableCell>
@@ -62,7 +111,7 @@ function StatusTable() {
               </TableCell>
             </TableRow>
           ))}
-        </TableBody>
+        </TableBody> */}
       </Table>
     </TableContainer>
   );
