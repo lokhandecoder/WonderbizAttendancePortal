@@ -7,36 +7,60 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { GetLeaveHistory } from "../../Database/LeaveHIstory";
-import { GetLeaveType } from "../../Database/LeaveType";
+import { GetLeaveType, LeaveType } from "../../Database/LeaveType";
 // import { GetAllAppliedLeaves } from "../../Services/LeaveApplyServices";
 import { API_URL } from "../../Services/APIConfig";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { getLeaveTypes } from "../../Services/LeaveType";
 
 interface Row {
-  appliedLeaveTypeId: number;
-  leaveTypeId: number; // Assuming row has a leaveTypeId property
-  startDate?: string; // Assuming startDate is an optional string
-  endDate?: string; // Assuming endDate is an optional string
-  leaveReason: string;
-  difference: string; // Assuming difference is a string
-  // ... other properties you might have
+  appliedLeaveTypeId : number;
+    leaveTypeId: number;
+    leaveType: null;
+    startDate: Date | null;
+    endDate: Date | null;
+    leaveReason: string;
+    balanceLeave: number;
+    applyLeaveDay : number,
+    remaingLeave:number,
 }
-const LeaveType = GetLeaveType();
+
 function StatusTable() {
   const [data, setData] = useState<Row[]>([]); // Specify the type for data
   const navigate = useNavigate();
+  const [leaveTypes, setLeaveTypes] = useState<LeaveType[]>([]);
 
-  const handleEdit = (appliedLeaveTypeId: number) => {
-    console.log("Edit button clicked for index:", appliedLeaveTypeId);
-    navigate("/edit/" + appliedLeaveTypeId);
+  const handleEdit = (appliedLeaveTypeId: number | undefined) => {
+   const editUrl = appliedLeaveTypeId ? `/leave/${appliedLeaveTypeId}` : '/leave';
+    navigate(editUrl);
   };
+  console.log("table",data);
 
   useEffect(() => {
     axios
-      .get(API_URL + "GetAllAppliedLeaves")
+      .get("https://leaveapplication14.azurewebsites.net/api/appliedLeave/GetAppliedLeavesAsync")
       .then((res) => setData(res.data.data))
       .catch((e) => console.log(e));
+
+      const fetchLeaveTypes = async () => {
+        try {
+          const fetchedLeaveTypes = await getLeaveTypes();
+       //   const { data, status } = fetchedLeaveTypes;
+          const leaveTypesData = fetchedLeaveTypes.data;
+          console.log("fetchedLeaveTypes",fetchedLeaveTypes)
+          if (Array.isArray(leaveTypesData)) {
+            setLeaveTypes(leaveTypesData);
+            console.log('Leave Types:', leaveTypesData);
+          } else {
+            console.error('Invalid leave types data.');
+          }
+        } catch (error) {
+          console.error('Error fetching leave types:', (error as Error).message);
+        }
+      };
+      fetchLeaveTypes();
+
   }, []);
 
   return (
@@ -48,15 +72,17 @@ function StatusTable() {
             <TableCell>Start Date</TableCell>
             <TableCell>End Date</TableCell>
             <TableCell>Reason for Leave</TableCell>
-            <TableCell>Total Days</TableCell>
+            <TableCell>Balance Leaves</TableCell>
+            <TableCell>Applied Days</TableCell>
+            <TableCell>Remaining Leaves</TableCell>
             <TableCell>Action</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.map((row: Row, key) => (
+          { data && data !== null ? ( data.map((row: Row, key) => (
             <TableRow key={key}>
               <TableCell>
-                {LeaveType.find((type) => type.leaveTypeId === row.leaveTypeId)
+                {leaveTypes.find((type) => type.leaveTypeId === row.leaveTypeId)
                   ?.leaveTypeName || ""}
               </TableCell>
               <TableCell>
@@ -70,7 +96,9 @@ function StatusTable() {
                   : "No date available"}
               </TableCell>
               <TableCell>{row.leaveReason}</TableCell>
-              <TableCell>{row.difference}</TableCell>
+              <TableCell>{row.balanceLeave}</TableCell>
+              <TableCell>{row.applyLeaveDay}</TableCell>
+              <TableCell>{row.remaingLeave}</TableCell>
               <TableCell>
                 <Button
                   color="primary"
@@ -81,7 +109,9 @@ function StatusTable() {
                 </Button>
               </TableCell>
             </TableRow>
-          ))}
+          ))): (
+            'No data available'
+          )}
         </TableBody>
         {/* <TableBody>
           {data.map((row, key) => (

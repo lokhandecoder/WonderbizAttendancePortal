@@ -5,7 +5,8 @@ import { LeaveFormData } from "../Model/LeaveFormData";
 import { GetLeaveHistory } from "../Database/LeaveHIstory";
 import { Console } from "console";
 import axios from "axios";
-import { createLeaveApply } from "../Services/LeaveApplyServices";
+import { createLeaveApply, updateLeaveApply } from "../Services/EmployeeLeaveApplyServices";
+
 const LeaveApplyUtilities = (
   formData: any,
   setFormData: React.Dispatch<any>,
@@ -19,24 +20,39 @@ const LeaveApplyUtilities = (
   setdifference: any,
   balanceLeave: any,
   setBalanceLeave: any,
+
+  employeeLeaves :EmployeeLeave[] ,setemployeeLeaves :any
 ) => {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
+
+    //console.log({formData});
+
+    //return false;
     // IsValidDate();
-    // if (balanceLeave < difference) {
+    // if (formData.applyLeave > formData.balanceLeave) {
     //   console.log("Error: You do not have sufficient leaves.");
     //   setSnackbarOpen(true);
-    // } 
-    // else 
-    if (!IsValidDate()) {
-      setsnackbarDateValid(true);
-      console.log("Error : Endate should be greater than start end");
-    } else if (formData.leaveTypeId < 0) {
+    // }else 
+    // if (!IsValidDate()) {
+    //   setsnackbarDateValid(true);
+    //   console.log("Error : Endate should be greater than start end");
+    // } else
+     if (formData.leaveTypeId <= 0) {
       setsnackLeavetype(true);
       console.log("Select tthe type");
     } else {
       onSubmit(formData);
-      createLeaveApply(formData)
+
+      if (formData.appliedLeaveTypeId>0){
+
+        updateLeaveApply(formData.appliedLeaveTypeId,formData)
+      }
+    else{
+      createLeaveApply(formData);
+    }
+      
+      // createLeaveApply(formData);
       // axios.post("https://leaveapplication14.azurewebsites.net/api/employee/CreateAppliedLeave",formData).then((res) => console.log("Send", res)).catch((e) => console.log("BAd",e));
       setsubmitMessageOpen(true);
     }
@@ -45,7 +61,7 @@ const LeaveApplyUtilities = (
   };
 
   const IsValidDate = () => {
-    if (formData.endDate >= formData.startDate) {
+    if (formData.endDate < formData.startDate) {
       console.log("valid");
       return true;
     } else {
@@ -91,17 +107,33 @@ const LeaveApplyUtilities = (
       endDate: todayDate,
       leaveReason: "",
     });
-    setdifference(0)
+    setdifference(0);
   };
 
+  // const GetBalanceLeaveByLeaveTypeId = (
+  //   employeeLeaves: EmployeeLeave[],
+  //   leaveTypeId: number
+  // ): number | null => {
+  //   const employeeLeave = employeeLeaves.find(
+  //     (leave) => leave.leaveTypeId === leaveTypeId
+  //   );
+  //   return employeeLeave ? employeeLeave.balanceLeaves : null;
+  // };
   const GetBalanceLeaveByLeaveTypeId = (
-    employeeLeaves: EmployeeLeave[],
+   // employeeLeaves: employeeLeaves,
     leaveTypeId: number
   ): number | null => {
-    const employeeLeave = employeeLeaves.find(
-      (leave) => leave.leaveTypeId === leaveTypeId
+    const balanceLeave = employeeLeaves.find(
+      (leave) => leave.leaveTypeId === leaveTypeId 
     );
-    return employeeLeave ? employeeLeave.balanceLeave : null;
+
+    
+    //alert(JSON.stringify(balanceLeave));
+    //alert(JSON.stringify(employeeLeaves));
+    //alert(JSON.stringify(leaveTypeId));
+    const balance =balanceLeave ? balanceLeave.balanceLeaves : 0;
+   // alert(balance);
+    return balance;
   };
   const differenceChecker = () => {
     const date1 = new Date(formData.startDate);
@@ -124,12 +156,13 @@ const LeaveApplyUtilities = (
     if (formData.startDate > formData.endDate) {
       return 0;
     } else {
-      setdifference(finaldays)
+      setdifference(finaldays);
       // setFormData((prevFormData: LeaveFormData) => ({
       //   ...prevFormData,
       //   difference: finaldays,
       // }));
       console.log("Difference in days (excluding weekends):", finaldays);
+    //  alert(finaldays);
       return finaldays;
     }
   };
@@ -137,22 +170,40 @@ const LeaveApplyUtilities = (
   const Test = () => {
     if (formData.leaveTypeId > 0) {
       const balanceLeave = GetBalanceLeaveByLeaveTypeId(
-        GetEmployeeLeave(),
+        //GetEmployeeLeave(),
         formData.leaveTypeId
       );
+      //alert(balanceLeave);
       setFormData((prevFormData: LeaveFormData) => ({
         ...prevFormData,
         balanceLeave: balanceLeave,
       }));
-      differenceChecker();
+     const applyLeave =  differenceChecker();
+     setFormData((prevFormData: LeaveFormData) => ({
+      ...prevFormData,
+      applyLeaveDay: applyLeave,
+      remaingLeave: prevFormData.balanceLeave -  applyLeave ,
+    }));
+    // setFormData((prevFormData: LeaveFormData) => ({
+    //   ...prevFormData,
+    //   remaingLeave: prevFormData.balanceLeave -  prevFormData.applyLeave  ,
+    // }));
+
     } else {
       setFormData((prevFormData: LeaveFormData) => ({
         ...prevFormData,
-        difference: 0,
         balanceLeave: 0,
+        applyLeaveDay: 0,
+        remaingLeave : 0
       }));
     }
+   
+    console.log({formData});
   };
+
+  // const ValidateEmployeeById = () => {
+  //   console.log(GetLeaveTypeByEmployeeId());
+  // }
 
   return {
     handleSelectChange,
@@ -163,6 +214,7 @@ const LeaveApplyUtilities = (
     handleSubmit,
     Test,
     differenceChecker,
+    // ValidateEmployeeById,
   };
 };
 export default LeaveApplyUtilities;

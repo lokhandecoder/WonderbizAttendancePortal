@@ -11,7 +11,7 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import axios from "axios";
-import { GetEmployeeLeave, GetLeaveType } from "../../Database/LeaveType";
+import { GetEmployeeLeave, GetLeaveType, LeaveType } from "../../Database/LeaveType";
 import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
@@ -27,16 +27,29 @@ import { DateValidationError } from "@mui/x-date-pickers/models";
 import { useParams } from "react-router-dom"; // Import useParams to get the ID from the route params
 import { GetLeaveData } from "../../Database/LeaveData";
 import { API_URL } from "../../Services/APIConfig";
-import {  GetLeaveApplyById } from "../../Services/LeaveApplyServices";
+import { getLeaveTypes } from "../../Services/LeaveType";
+import { GetEmployeeLeaveByEmployeeId } from "../../Services/EmployeeLeaveServices";
+import { EmployeeLeave } from "../../Model/EmployeeLeave";
+import { GetApplyLeaveById } from "../../Services/EmployeeLeaveApplyServices";
+
+
+// import {  GetEmpolyeeDetails, GetLeaveApplyById } from "../../Services/LeaveApplyServices";
 dayjs.extend(utc); // Extend Dayjs with UTC plugin
 interface LeaveFormProps {
   onSubmit: (formData: LeaveFormData) => void;
 }
-const LeaveType = GetLeaveType();
+//const LeaveType = GetLeaveType();
+//const LeaveType = [];
 const employee = GetEmployeeLeave();
 console.log(employee);
 
 const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
+
+  const { id } = useParams();
+  const appliedLeaveTypeId = id?  parseInt(id, 10) : 0; // Use logical OR to set a default of 0
+ 
+  //alert(appliedLeaveTypeId);
+
   // const { id } = useParams(); // Get the ID from the route params
   const today = dayjs();
   const todayDate = today.toDate();
@@ -63,11 +76,17 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
 
   const [formData, setFormData] = useState<LeaveFormData>(
     {
+      appliedLeaveTypeId : appliedLeaveTypeId ,
     leaveTypeId: 0,
     leaveType: null,
     startDate: todayDate,
     endDate: todayDate,
     leaveReason: "",
+    balanceLeave : 0,
+    applyLeaveDay : 0,
+    remaingLeave:0,
+    leaveStatusId: 2,
+
   }
   );
   const isWeekend = (date: Dayjs) => {
@@ -76,28 +95,9 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
     return day === 0 || day === 6;
   };
 
-  // useEffect(() => {
+  const [leaveTypes, setLeaveTypes] = useState<LeaveType[]>([]);
+  const [employeeLeaves,setemployeeLeaves ] = useState<EmployeeLeave[]>([]);
 
-  //   const fetchLeaveData = async () => {
-  //     try {
-  //       const response = await fetch(`https://leaveapplication14.azurewebsites.net/api/employee/GetSingleAppliedLeave${id}`); 
-  //       const data = await response.json();
-  //       setFormData({
-  //         leaveTypeId: data.data.leaveTypeId,
-  //         leaveType: data.data.leaveType,
-  //         startDate: data.data.startDate,
-  //         endDate: data.data.endDate,
-  //         leaveReason: data.data.leaveReason,
-  //       });
-  //     } catch (error) {
-  //       console.error("Error fetching leave data:", error);
-  //     }
-  //   };
-
-  //   if (id) {
-  //     fetchLeaveData();
-  //   }
-  // }, [id]); 
   const {
     handleSelectChange,
     handleInputChange,
@@ -117,31 +117,112 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
     difference,
     setdifference,
     balanceLeave,
-    setBalanceLeave
+    setBalanceLeave,
+
+    employeeLeaves,setemployeeLeaves
 
   );
 
-  useEffect(() => {
+  useEffect(() => { 
+
     Test();
   }, [formData.leaveTypeId, formData.endDate, formData.startDate]);
-  const [error, setError] = React.useState<DateValidationError | null>(null);
 
-  // const errorMessage = React.useMemo(() => {
-  //   switch (error) {
-  //     case "maxDate":
-  //     case "minDate": {
-  //       return "Please select a date in the first quarter of 2022";
+
+  // useEffect(() => {
+  //   const fetchLeaveTypes = async () => {
+  //     try {
+  //       const fetchedLeaveTypes = await getLeaveTypes();
+  //    //   const { data, status } = fetchedLeaveTypes;
+  //       const leaveTypesData = fetchedLeaveTypes.data;
+  //       console.log("fetchedLeaveTypes",fetchedLeaveTypes)
+  //       if (Array.isArray(leaveTypesData)) {
+  //         setLeaveTypes(leaveTypesData);
+  //         console.log('Leave Types:', leaveTypesData);
+  //       } else {
+  //         console.error('Invalid leave types data.');
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching leave types:', (error as Error).message);
   //     }
+  //   };
 
-  //     case "invalidDate": {
-  //       return "Your date is not valid";
-  //     }
-
-  //     default: {
-  //       return "";
+  //   const fetchAvailableLeaveByEmplpyeeId = async () => {
+  //     try {
+  //       const fetchAvailableLeaveByEmplpyeeId = await GetEmployeeLeaveByEmployeeId();
+  //       const FetchLeave = fetchAvailableLeaveByEmplpyeeId.data;
+  //       console.log("fetchedAvailabeLeaves",fetchAvailableLeaveByEmplpyeeId);
+  //       if (Array.isArray(FetchLeave)) {
+  //         setemployeeLeaves(FetchLeave);
+  //         console.log('Available Types:', FetchLeave);
+  //       } else {
+  //         console.error('Invalid Avaialabe Employee Leaves.');
+  //       }
+  //     }catch (error) {
+  //       console.error('Error fetching leave types:', (error as Error).message);
   //     }
   //   }
-  // }, [error]);
+  
+  //    fetchAvailableLeaveByEmplpyeeId();
+  //   // GetEmployeeLeaveByEmployeeId()
+  //   fetchLeaveTypes();
+  // }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [leaveTypesData, employeeLeaveData] = await Promise.all([
+          getLeaveTypes(),
+          GetEmployeeLeaveByEmployeeId()
+        ]);
+
+     
+
+        const leaveTypes = leaveTypesData.data;
+        setLeaveTypes(leaveTypes);
+
+
+        const employeeLeave = employeeLeaveData.data;
+        setemployeeLeaves(employeeLeave);
+
+        if (formData.appliedLeaveTypeId > 0) {
+
+          const applyLeaveId = formData.appliedLeaveTypeId; // Replace with the actual apply leave ID
+          const applyLeaveData = await GetApplyLeaveById(applyLeaveId);
+  
+          
+          const applyLeaveTemp = applyLeaveData.data;
+  
+          console.log(applyLeaveTemp);
+         // Use values from applyLeaveTemp to set initial state of formData
+         setFormData({
+          appliedLeaveTypeId: applyLeaveTemp.appliedLeaveTypeId,
+          leaveTypeId: applyLeaveTemp.leaveTypeId,
+          leaveType: applyLeaveTemp.leaveType,
+          startDate: applyLeaveTemp.startDate,
+          endDate: applyLeaveTemp.endDate,
+          leaveReason: applyLeaveTemp.leaveReason,
+          applyLeaveDay: applyLeaveTemp.applyLeaveDay,
+          remaingLeave: applyLeaveTemp.remaingLeave,
+          balanceLeave: applyLeaveTemp.balanceLeave,
+          leaveStatusId: applyLeaveTemp.leaveStatusId,
+        });
+        }
+
+
+
+
+
+      } catch (error) {
+        console.error('Failed to fetch data: ',(error as Error).message);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+
+
   return (
     <>
       <form onSubmit={handleSubmit}>
@@ -154,7 +235,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                 rowSpacing={1}
                 columnSpacing={{ xs: 1, sm: 2, md: 3 }}
               >
-                <Grid item xs={2}>
+                <Grid item xs={12} sm= {4} md={3} lg={2}>
                   <FormControl fullWidth sx={{ mt: 1 }}>
                     <InputLabel id="leaveType">leaveType</InputLabel>
                     <Select
@@ -166,7 +247,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                       onChange={handleSelectChange}
                     >
                       <MenuItem value={0}>None</MenuItem>
-                      {LeaveType.map((type, index) => (
+                      {leaveTypes.map((type, index) => (
                         <MenuItem key={index} value={type.leaveTypeId}>
                           {type.leaveTypeName}
                         </MenuItem>
@@ -174,7 +255,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={12} sm= {4} md={3} lg={2}>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DemoContainer components={["DatePicker"]}>
                       <FormControl fullWidth>
@@ -196,7 +277,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                     </DemoContainer>
                   </LocalizationProvider>
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={12} sm= {4} md={3} lg={2}>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DemoContainer components={["DatePicker"]}>
                       <FormControl fullWidth>
@@ -228,30 +309,30 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                     </DemoContainer>
                   </LocalizationProvider>
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={12} sm= {4} md={3} lg={2}>
                   <TextField
                     sx={{ mt: 1 }}
-                    id="AvailabeLeaves"
-                    name="AvailabeLeaves"
-                    label="Availabe Leaves"
+                    id="BalancedLeaves"
+                    name="Balanced Leaves"
+                    label="Balanced Leaves"
                     aria-readonly
                     // error={formData.balanceLeave < formData.difference}
-                    value={balanceLeave}
+                    value={formData.balanceLeave}
                     fullWidth
                   />
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={12} sm= {4} md={3} lg={2}>
                   <TextField
                     sx={{ mt: 1 }}
                     id="AppliedLeaves"
                     name="AppliedLeaves"
                     label="Applied Leaves"
                     aria-readonly
-                    error={balanceLeave < difference}
-                    value={difference}
+                    // error={balanceLeave < difference}
+                    value={formData.applyLeaveDay}
                     fullWidth
                   />
-                  {balanceLeave < difference ? (
+                  {formData.balanceLeave < formData.applyLeaveDay? (
                     <span style={{ color: "red" }}>
                       You dont have sufficient leaves
                     </span>
@@ -259,14 +340,14 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                     <span></span>
                   )}
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={12} sm= {4} md={3} lg={2}>
                   <TextField
                     sx={{ mt: 1 }}
-                    id="BalanceLeaves"
-                    name="BalanceLeaves"
-                    label="Balance Leaves"
+                    id="RemainingLeaves"
+                    name="Remaining Leaves"
+                    label="Remaining Leaves"
                     aria-readonly
-                    value={balanceLeave - difference}
+                    value={formData.remaingLeave}
                     fullWidth
                   />
                 </Grid>
