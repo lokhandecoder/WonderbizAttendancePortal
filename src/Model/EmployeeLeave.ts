@@ -1,7 +1,4 @@
 export interface EmployeeLeave {
-  // leaveTypeId :number;
-  // employeeId: number;
-  // balanceLeave: number;
   employeeLeaveId: number;
   employeeId: number;
   employee: null;

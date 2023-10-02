@@ -10,7 +10,6 @@ export async function GetEmployeeLeaveByEmployeeId(): Promise<{ data: EmployeeLe
   try {
   //  const response = await axios.get<LeaveType[]>(`${API_URL}/GetAllLeaveTypes`);
   const response = await axios.get<{ data: EmployeeLeave[] }>(`https://leaveapplication14.azurewebsites.net/api/EmployeeLeave/GetEmployeeLeaveByEmployeeId/3`);
-   console.log("Data from API",response.data)
     return response.data;
     
   } catch (error) {

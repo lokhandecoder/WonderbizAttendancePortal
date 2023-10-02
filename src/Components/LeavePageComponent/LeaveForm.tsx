@@ -11,7 +11,11 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import axios from "axios";
-import { GetEmployeeLeave, GetLeaveType, LeaveType } from "../../Database/LeaveType";
+import {
+  GetEmployeeLeave,
+  GetLeaveType,
+  LeaveType,
+} from "../../Database/LeaveType";
 import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
@@ -32,25 +36,17 @@ import { GetEmployeeLeaveByEmployeeId } from "../../Services/EmployeeLeaveServic
 import { EmployeeLeave } from "../../Model/EmployeeLeave";
 import { GetApplyLeaveById } from "../../Services/EmployeeLeaveApplyServices";
 
-
-// import {  GetEmpolyeeDetails, GetLeaveApplyById } from "../../Services/LeaveApplyServices";
 dayjs.extend(utc); // Extend Dayjs with UTC plugin
 interface LeaveFormProps {
   onSubmit: (formData: LeaveFormData) => void;
 }
-//const LeaveType = GetLeaveType();
-//const LeaveType = [];
+
 const employee = GetEmployeeLeave();
 console.log(employee);
 
 const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
-
   const { id } = useParams();
-  const appliedLeaveTypeId = id?  parseInt(id, 10) : 0; // Use logical OR to set a default of 0
- 
-  //alert(appliedLeaveTypeId);
-
-  // const { id } = useParams(); // Get the ID from the route params
+  const appliedLeaveTypeId = id ? parseInt(id, 10) : 0;
   const today = dayjs();
   const todayDate = today.toDate();
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -59,7 +55,6 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
   const [submitMessageOpen, setsubmitMessageOpen] = useState(false);
   const [difference, setdifference] = useState(0);
   const [balanceLeave, setBalanceLeave] = useState(0);
-  // const [error, setError] = React.useState<DateValidationError | null>(null);
 
   const handleLeaveType = () => {
     setsnackLeavetype(false);
@@ -74,21 +69,18 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
     setsubmitMessageOpen(false);
   };
 
-  const [formData, setFormData] = useState<LeaveFormData>(
-    {
-      appliedLeaveTypeId : appliedLeaveTypeId ,
+  const [formData, setFormData] = useState<LeaveFormData>({
+    appliedLeaveTypeId: appliedLeaveTypeId,
     leaveTypeId: 0,
     leaveType: null,
     startDate: todayDate,
     endDate: todayDate,
     leaveReason: "",
-    balanceLeave : 0,
-    applyLeaveDay : 0,
-    remaingLeave:0,
+    balanceLeave: 0,
+    applyLeaveDay: 0,
+    remaingLeave: 0,
     leaveStatusId: 2,
-
-  }
-  );
+  });
   const isWeekend = (date: Dayjs) => {
     const day = date.day();
 
@@ -96,7 +88,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
   };
 
   const [leaveTypes, setLeaveTypes] = useState<LeaveType[]>([]);
-  const [employeeLeaves,setemployeeLeaves ] = useState<EmployeeLeave[]>([]);
+  const [employeeLeaves, setemployeeLeaves] = useState<EmployeeLeave[]>([]);
 
   const {
     handleSelectChange,
@@ -119,109 +111,49 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
     balanceLeave,
     setBalanceLeave,
 
-    employeeLeaves,setemployeeLeaves
-
+    employeeLeaves,
+    setemployeeLeaves
   );
 
-  useEffect(() => { 
-
+  useEffect(() => {
     Test();
   }, [formData.leaveTypeId, formData.endDate, formData.startDate]);
-
-
-  // useEffect(() => {
-  //   const fetchLeaveTypes = async () => {
-  //     try {
-  //       const fetchedLeaveTypes = await getLeaveTypes();
-  //    //   const { data, status } = fetchedLeaveTypes;
-  //       const leaveTypesData = fetchedLeaveTypes.data;
-  //       console.log("fetchedLeaveTypes",fetchedLeaveTypes)
-  //       if (Array.isArray(leaveTypesData)) {
-  //         setLeaveTypes(leaveTypesData);
-  //         console.log('Leave Types:', leaveTypesData);
-  //       } else {
-  //         console.error('Invalid leave types data.');
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching leave types:', (error as Error).message);
-  //     }
-  //   };
-
-  //   const fetchAvailableLeaveByEmplpyeeId = async () => {
-  //     try {
-  //       const fetchAvailableLeaveByEmplpyeeId = await GetEmployeeLeaveByEmployeeId();
-  //       const FetchLeave = fetchAvailableLeaveByEmplpyeeId.data;
-  //       console.log("fetchedAvailabeLeaves",fetchAvailableLeaveByEmplpyeeId);
-  //       if (Array.isArray(FetchLeave)) {
-  //         setemployeeLeaves(FetchLeave);
-  //         console.log('Available Types:', FetchLeave);
-  //       } else {
-  //         console.error('Invalid Avaialabe Employee Leaves.');
-  //       }
-  //     }catch (error) {
-  //       console.error('Error fetching leave types:', (error as Error).message);
-  //     }
-  //   }
-  
-  //    fetchAvailableLeaveByEmplpyeeId();
-  //   // GetEmployeeLeaveByEmployeeId()
-  //   fetchLeaveTypes();
-  // }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [leaveTypesData, employeeLeaveData] = await Promise.all([
           getLeaveTypes(),
-          GetEmployeeLeaveByEmployeeId()
+          GetEmployeeLeaveByEmployeeId(),
         ]);
-
-     
-
         const leaveTypes = leaveTypesData.data;
         setLeaveTypes(leaveTypes);
-
-
         const employeeLeave = employeeLeaveData.data;
         setemployeeLeaves(employeeLeave);
-
         if (formData.appliedLeaveTypeId > 0) {
-
           const applyLeaveId = formData.appliedLeaveTypeId; // Replace with the actual apply leave ID
           const applyLeaveData = await GetApplyLeaveById(applyLeaveId);
-  
-          
           const applyLeaveTemp = applyLeaveData.data;
-  
-          console.log(applyLeaveTemp);
-         // Use values from applyLeaveTemp to set initial state of formData
-         setFormData({
-          appliedLeaveTypeId: applyLeaveTemp.appliedLeaveTypeId,
-          leaveTypeId: applyLeaveTemp.leaveTypeId,
-          leaveType: applyLeaveTemp.leaveType,
-          startDate: applyLeaveTemp.startDate,
-          endDate: applyLeaveTemp.endDate,
-          leaveReason: applyLeaveTemp.leaveReason,
-          applyLeaveDay: applyLeaveTemp.applyLeaveDay,
-          remaingLeave: applyLeaveTemp.remaingLeave,
-          balanceLeave: applyLeaveTemp.balanceLeave,
-          leaveStatusId: applyLeaveTemp.leaveStatusId,
-        });
+          setFormData({
+            appliedLeaveTypeId: applyLeaveTemp.appliedLeaveTypeId,
+            leaveTypeId: applyLeaveTemp.leaveTypeId,
+            leaveType: applyLeaveTemp.leaveType,
+            startDate: applyLeaveTemp.startDate,
+            endDate: applyLeaveTemp.endDate,
+            leaveReason: applyLeaveTemp.leaveReason,
+            applyLeaveDay: applyLeaveTemp.applyLeaveDay,
+            remaingLeave: applyLeaveTemp.remaingLeave,
+            balanceLeave: applyLeaveTemp.balanceLeave,
+            leaveStatusId: applyLeaveTemp.leaveStatusId,
+          });
         }
-
-
-
-
-
       } catch (error) {
-        console.error('Failed to fetch data: ',(error as Error).message);
+        console.error("Failed to fetch data: ", (error as Error).message);
       }
     };
 
     fetchData();
   }, []);
-
-
 
   return (
     <>
@@ -235,7 +167,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                 rowSpacing={1}
                 columnSpacing={{ xs: 1, sm: 2, md: 3 }}
               >
-                <Grid item xs={12} sm= {4} md={3} lg={2}>
+                <Grid item xs={12} sm={4} md={3} lg={2}>
                   <FormControl fullWidth sx={{ mt: 1 }}>
                     <InputLabel id="leaveType">leaveType</InputLabel>
                     <Select
@@ -255,7 +187,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm= {4} md={3} lg={2}>
+                <Grid item xs={12} sm={4} md={3} lg={2}>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DemoContainer components={["DatePicker"]}>
                       <FormControl fullWidth>
@@ -277,23 +209,13 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                     </DemoContainer>
                   </LocalizationProvider>
                 </Grid>
-                <Grid item xs={12} sm= {4} md={3} lg={2}>
+                <Grid item xs={12} sm={4} md={3} lg={2}>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DemoContainer components={["DatePicker"]}>
                       <FormControl fullWidth>
                         <DatePicker
-                          //  onError={(newError) => setError(newError)}
-                          //  slotProps={{
-                          //    textField: {
-                          //      helperText: errorMessage,
-                          //    },
-                          //  }}
-
-                          //  minDate={dayjs.utc(formData.startDate)}
-                          //  maxDate={dayjs.utc(formData.endDate)}
                           label="End Date"
                           shouldDisableDate={isWeekend}
-                          // minDate={today}
                           value={
                             formData.endDate
                               ? dayjs.utc(formData.endDate)
@@ -309,30 +231,55 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                     </DemoContainer>
                   </LocalizationProvider>
                 </Grid>
-                <Grid item xs={12} sm= {4} md={3} lg={2}>
+                <Grid item xs={12} sm={4} md={3} lg={2}>
+                  <FormControl fullWidth sx={{ mt: 1 }}>
+                    <InputLabel id="applyLeaveDay">Apply Leave</InputLabel>
+                    <Select
+                      labelId="applyLeaveDay"
+                      id="applyLeaveDay"
+                      value={formData.applyLeaveDay}
+                      label="Apply Leave"
+                      name="applyLeaveDay"
+                      onChange={(event) => {
+                        const value = parseFloat(event.target.value as string);
+                        setFormData({
+                          ...formData,
+                          applyLeaveDay: value,
+                          balanceLeave:
+                            value === 0.5
+                              ? balanceLeave - 0.5
+                              : balanceLeave - 1,
+                        });
+                      }}
+                    >
+                      <MenuItem value={0.5}>Half Day</MenuItem>
+                      <MenuItem value={1}>Full Day</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={4} md={3} lg={2}>
                   <TextField
                     sx={{ mt: 1 }}
                     id="BalancedLeaves"
                     name="Balanced Leaves"
                     label="Balanced Leaves"
                     aria-readonly
-                    // error={formData.balanceLeave < formData.difference}
                     value={formData.balanceLeave}
                     fullWidth
                   />
                 </Grid>
-                <Grid item xs={12} sm= {4} md={3} lg={2}>
+                <Grid item xs={12} sm={4} md={3} lg={2}>
                   <TextField
                     sx={{ mt: 1 }}
                     id="AppliedLeaves"
                     name="AppliedLeaves"
                     label="Applied Leaves"
                     aria-readonly
-                    // error={balanceLeave < difference}
+                    error={formData.applyLeaveDay > formData.balanceLeave}
                     value={formData.applyLeaveDay}
                     fullWidth
                   />
-                  {formData.balanceLeave < formData.applyLeaveDay? (
+                  {formData.balanceLeave < formData.applyLeaveDay ? (
                     <span style={{ color: "red" }}>
                       You dont have sufficient leaves
                     </span>
@@ -340,7 +287,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                     <span></span>
                   )}
                 </Grid>
-                <Grid item xs={12} sm= {4} md={3} lg={2}>
+                <Grid item xs={12} sm={4} md={3} lg={2}>
                   <TextField
                     sx={{ mt: 1 }}
                     id="RemainingLeaves"

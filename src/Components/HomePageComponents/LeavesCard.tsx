@@ -27,7 +27,7 @@ function LeavesCard() {
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={2}>
         {myArray.map((value, key) => (
-          <Grid xs={4} key={key}>
+          <Grid xs={4} key={key} >
             <Card sx={{ minWidth: 275, boxShadow: 4 }}>
               <CardContent>
                 <Typography

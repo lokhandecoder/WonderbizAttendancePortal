@@ -9,8 +9,6 @@ export async function GetApplyLeaveById(appliedLeaveTypeId: number): Promise<{ d
 
     try {
       const response = await axios.get<{data:LeaveFormData}>(`https://leaveapplication14.azurewebsites.net/api/appliedLeave/GetAppliedLeaveByIdAsync/${appliedLeaveTypeId}`);
-      console.log("Data from API", response.data);
-      // alert(JSON.stringify( response.data));
       return response.data;
     } catch (error) {
       throw new Error('Failed to fetch leave data: ' + (error as Error).message);

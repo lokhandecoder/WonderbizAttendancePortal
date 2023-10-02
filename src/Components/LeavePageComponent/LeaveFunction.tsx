@@ -2,20 +2,20 @@ interface FormData {
   startDate: string;
   endDate: string;
 }
-export function GetDifference(formData: FormData) {
-  const startDateObj = new Date(formData.startDate);
-  const endDateObj = new Date(formData.endDate);
+// export function GetDifference(formData: FormData) {
+//   const startDateObj = new Date(formData.startDate);
+//   const endDateObj = new Date(formData.endDate);
 
-  if (!isNaN(startDateObj.getTime()) && !isNaN(endDateObj.getTime())) {
-    const differenceInMilliseconds =
-      endDateObj.getTime() - startDateObj.getTime();
-    const differenceInDays = Math.floor(
-      differenceInMilliseconds / (1000 * 3600 * 24)
-    );
-    return differenceInDays;
-  }
+//   if (!isNaN(startDateObj.getTime()) && !isNaN(endDateObj.getTime())) {
+//     const differenceInMilliseconds =
+//       endDateObj.getTime() - startDateObj.getTime();
+//     const differenceInDays = Math.floor(
+//       differenceInMilliseconds / (1000 * 3600 * 24)
+//     );
+//     return differenceInDays;
+//   }
 
-}
+// }
 
 interface clearList {
   type: number;
