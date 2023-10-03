@@ -55,6 +55,7 @@ const LeaveApplyUtilities = (
       // createLeaveApply(formData);
       // axios.post("https://leaveapplication14.azurewebsites.net/api/employee/CreateAppliedLeave",formData).then((res) => console.log("Send", res)).catch((e) => console.log("BAd",e));
       setsubmitMessageOpen(true);
+      handleClear();
     }
     // const list = GetLeaveHistory();
     // list.push(formData);

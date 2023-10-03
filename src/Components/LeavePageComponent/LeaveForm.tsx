@@ -30,7 +30,6 @@ import Alert from "@mui/material/Alert";
 import { DateValidationError } from "@mui/x-date-pickers/models";
 import { useParams } from "react-router-dom"; // Import useParams to get the ID from the route params
 import { GetLeaveData } from "../../Database/LeaveData";
-import { API_URL } from "../../Services/APIConfig";
 import { getLeaveTypes } from "../../Services/LeaveType";
 import { GetEmployeeLeaveByEmployeeId } from "../../Services/EmployeeLeaveServices";
 import { EmployeeLeave } from "../../Model/EmployeeLeave";
@@ -55,6 +54,9 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
   const [submitMessageOpen, setsubmitMessageOpen] = useState(false);
   const [difference, setdifference] = useState(0);
   const [balanceLeave, setBalanceLeave] = useState(0);
+  const [applyLeaveDefaultValue, setApplyLeaveDefaultValue] = useState(1); // Default value for Apply Leave dropdown
+  const [applyLeaveReadOnly, setApplyLeaveReadOnly] = useState(false); // Readonly state for Apply Leave dropdown
+
 
   const handleLeaveType = () => {
     setsnackLeavetype(false);
@@ -154,6 +156,20 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
 
     fetchData();
   }, []);
+  // useEffect(() => {
+  //   // Calculate the difference in days between start date and end date
+  //   const dateDifference = formData.endDate.diff(formData.startDate, 'day');
+
+  //   // If difference is greater than 1 day, set default value to "Full Day" and make it readonly
+  //   if (dateDifference > 1) {
+  //     setApplyLeaveDefaultValue(1); // Full Day
+  //     setApplyLeaveReadOnly(true);
+  //   } else {
+  //     // If difference is 1 day or less, set default value to "None" and allow changes
+  //     setApplyLeaveDefaultValue(0); // None
+  //     setApplyLeaveReadOnly(false);
+  //   }
+  // }, [formData.startDate, formData.endDate]);
 
   return (
     <>
@@ -169,12 +185,12 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
               >
                 <Grid item xs={12} sm={4} md={3} lg={2}>
                   <FormControl fullWidth sx={{ mt: 1 }}>
-                    <InputLabel id="leaveType">leaveType</InputLabel>
+                    <InputLabel id="leaveType">Leave Type</InputLabel>
                     <Select
                       labelId="leaveType"
                       id="demo-simple-select"
                       value={formData.leaveTypeId}
-                      label="leaveType"
+                      label="Leave Type"
                       name="leaveTypeId"
                       onChange={handleSelectChange}
                     >
@@ -231,7 +247,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                     </DemoContainer>
                   </LocalizationProvider>
                 </Grid>
-                <Grid item xs={12} sm={4} md={3} lg={2}>
+                {/* <Grid item xs={12} sm={4} md={3} lg={2}>
                   <FormControl fullWidth sx={{ mt: 1 }}>
                     <InputLabel id="applyLeaveDay">Apply Leave</InputLabel>
                     <Select
@@ -242,13 +258,15 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                       name="applyLeaveDay"
                       onChange={(event) => {
                         const value = parseFloat(event.target.value as string);
+                        const newApplyLeaveDay = value;
+
+                        // Calculate the change in balanceLeave based on the selected applyLeaveDay
+                        const balanceLeaveChange = value === 0.5 ? -0.5 : -1;
+
                         setFormData({
                           ...formData,
-                          applyLeaveDay: value,
-                          balanceLeave:
-                            value === 0.5
-                              ? balanceLeave - 0.5
-                              : balanceLeave - 1,
+                          applyLeaveDay: newApplyLeaveDay,
+                          balanceLeave: balanceLeave + balanceLeaveChange,
                         });
                       }}
                     >
@@ -256,7 +274,34 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                       <MenuItem value={1}>Full Day</MenuItem>
                     </Select>
                   </FormControl>
-                </Grid>
+                </Grid> */}
+
+                {/* <Grid item xs={12} sm={4} md={3} lg={2}>
+                  <FormControl fullWidth sx={{ mt: 1 }}>
+                    <InputLabel id="DayType">Apply Leave</InputLabel>
+                    <Select
+                      labelId="DayType"
+                      id="DayType"
+                      value={formData.applyLeaveDay}
+                      label="DayType"
+                      name="DayType"
+                      onChange={(event) => {
+                        const value = parseFloat(event.target.value as string);
+                        const balanceLeaveChange = value === 0.5 ? -0.5 : -1;
+                        setFormData({
+                          ...formData,
+                          applyLeaveDay:value,
+                          remaingLeave: formData.remaingLeave - balanceLeaveChange, // Use the defined remaingLeave variable here
+                        });
+                      }}
+                      defaultValue={applyLeaveDefaultValue} // Set default value
+          readOnly={applyLeaveReadOnly} // Set readonly state
+                    >
+                      <MenuItem value={0.5}>Half Day</MenuItem>
+                      <MenuItem value={1}>Full Day</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid> */}
                 <Grid item xs={12} sm={4} md={3} lg={2}>
                   <TextField
                     sx={{ mt: 1 }}
@@ -312,14 +357,14 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
               fullWidth
             />
           </CardContent>
-          <CardActions>
+          <CardActions style={{ justifyContent: 'right' }}>
             <Button
               type="submit"
               size="large"
               variant="contained"
               color="primary"
             >
-              Submit
+              Apply
             </Button>
             <Button
               size="large"
