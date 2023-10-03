@@ -49,14 +49,15 @@ function StatusTable() {
   const handleUpdate = () => {
 
   }
-  const handleSelectStatusChange = (event: SelectChangeEvent<number>, rowIndex: number) => {
+  const handleSelectStatusChange = (event: SelectChangeEvent<number>, id: number) => {
     const selectedLeaveStatusId = typeof event.target.value === 'string' ? parseInt(event.target.value, 10) : event.target.value;
   
     // Update the state for the specific row with the selected leave status id
-    const updatedData = [...data];
-    updatedData[rowIndex].leaveStatusId = selectedLeaveStatusId;
-    setData(updatedData);
-    console.log("updated data",updatedData);
+    console.log("Id", selectedLeaveStatusId,id);
+    // const updatedData = [...data];
+    // updatedData[rowIndex].leaveStatusId = selectedLeaveStatusId;
+    // setData(updatedData);
+    // console.log("updated data",updatedData);
   
     // You can also get the leave status name based on the selected leave status id
     const selectedLeaveStatus = leaveStatus.find((status) => status.leaveStatusId === selectedLeaveStatusId);
@@ -181,7 +182,7 @@ function StatusTable() {
                       value={row.leaveStatusId}
                       label="Leave Type"
                       name="leaveTypeId"
-                      onChange={(event) => handleSelectStatusChange(event, key)}
+                      onChange={(event) => handleSelectStatusChange(event, row.appliedLeaveTypeId)}
                       >
                       {/* <MenuItem value={0}>None</MenuItem> */}
                       {leaveStatus.map((type, index) => (
