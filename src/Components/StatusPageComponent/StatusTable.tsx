@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ChangeEvent } from 'react';
+import { ChangeEvent } from "react";
 import Button from "@mui/material/Button";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -11,15 +11,14 @@ import { LeaveType } from "../../Database/LeaveType";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { getLeaveStatus, getLeaveTypes } from "../../Services/LeaveType";
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import { LeaveStatus } from "../../Model/LeaveStatus";
 import { API_URL } from "../../APIConfig";
 import { GetAppliedLeavesAsync } from "../../Services/EmployeeLeaveApplyServices";
 
-
 interface Row {
-  appliedLeaveTypeId: number;
+  appliedLeaveTypeId?: number;
   leaveTypeId: number;
   leaveType: null;
   startDate: Date | null;
@@ -38,38 +37,45 @@ function StatusTable() {
   const [leaveStatus, setLeaveStatus] = useState<LeaveStatus[]>([]);
   const [selectedLeaveStatusId, setSelectedLeaveStatusId] = useState<number>(0);
 
-
-
   const handleEdit = (appliedLeaveTypeId: number | undefined) => {
     const editUrl = appliedLeaveTypeId
       ? `/leave/${appliedLeaveTypeId}`
       : "/leave";
     navigate(editUrl);
   };
-  const handleUpdate = () => {
+  const handleUpdate = (appliedLeaveTypeId: number | undefined) => {
+    console.log(
+      "applied id = ",
+      appliedLeaveTypeId,
+      "value",
+      selectedLeaveStatusId
+    );
+  };
+  const handleSelectStatusChange = (
+    event: SelectChangeEvent<number>,
+    appliedLeaveTypeId: number | undefined
+  ) => {
+    const value =
+      typeof event.target.value === "string"
+        ? parseInt(event.target.value, 10)
+        : event.target.value;
 
-  }
-  const handleSelectStatusChange = (event: SelectChangeEvent<number>, id: number) => {
-    const selectedLeaveStatusId = typeof event.target.value === 'string' ? parseInt(event.target.value, 10) : event.target.value;
-  
-    // Update the state for the specific row with the selected leave status id
-    console.log("Id", selectedLeaveStatusId,id);
-    // const updatedData = [...data];
-    // updatedData[rowIndex].leaveStatusId = selectedLeaveStatusId;
-    // setData(updatedData);
-    // console.log("updated data",updatedData);
-  
-    // You can also get the leave status name based on the selected leave status id
-    const selectedLeaveStatus = leaveStatus.find((status) => status.leaveStatusId === selectedLeaveStatusId);
-    const selectedLeaveStatusName = selectedLeaveStatus ? selectedLeaveStatus.leaveStatusName : '';
-  
-    // Do something with the selectedLeaveStatusId and selectedLeaveStatusName
-    console.log('Selected Leave Status Id:', selectedLeaveStatusId);
-    console.log('Selected Leave Status Name:', selectedLeaveStatusName);
+    setData((prevData) =>
+      prevData.map((row) => {
+        if (row.appliedLeaveTypeId === appliedLeaveTypeId) {
+          return { ...row, leaveStatusId: value };
+        }
+        return row;
+      })
+    );
+
+    // Update selectedLeaveStatusId
+    setSelectedLeaveStatusId(value);
   };
   useEffect(() => {
     const FetchList = async () => {
       try {
+        const employeeId = 3; // Replace with the actual employee ID
         const fetchData = await GetAppliedLeavesAsync();
         const fetched = fetchData.data;
         if (Array.isArray(fetched)) {
@@ -80,8 +86,7 @@ function StatusTable() {
       } catch (error) {
         console.error("Error fetching leave types:", (error as Error).message);
       }
-
-    }
+    };
     // axios
     //   .get(`${API_URL}appliedLeave/GetAppliedLeavesAsync`)
     //   .then((res) => {setData(res.data.data);console.log("new data", res.data.data)})
@@ -100,22 +105,20 @@ function StatusTable() {
         console.error("Error fetching leave types:", (error as Error).message);
       }
     };
-    FetchList()
+    FetchList();
     fetchLeaveTypes();
   }, []);
   function formatDate(date: Date) {
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Months are zero-based
     const year = date.getFullYear();
-  
+
     return `${day}/${month}/${year}`;
   }
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [LeaveStatus] = await Promise.all([
-          getLeaveStatus()
-        ]);
+        const [LeaveStatus] = await Promise.all([getLeaveStatus()]);
         const leavestatuss = LeaveStatus.data;
         setLeaveStatus(leavestatuss);
       } catch (error) {
@@ -176,14 +179,16 @@ function StatusTable() {
                   <TableCell>{row.applyLeaveDay}</TableCell>
                   <TableCell>{row.remaingLeave}</TableCell>
                   <TableCell>
-                  <Select
+                    <Select
                       labelId="leaveType"
                       id="demo-simple-select"
                       value={row.leaveStatusId}
                       label="Leave Type"
                       name="leaveTypeId"
-                      onChange={(event) => handleSelectStatusChange(event, row.appliedLeaveTypeId)}
-                      >
+                      onChange={(event) =>
+                        handleSelectStatusChange(event, row.appliedLeaveTypeId)
+                      }
+                    >
                       {/* <MenuItem value={0}>None</MenuItem> */}
                       {leaveStatus.map((type, index) => (
                         <MenuItem key={index} value={type.leaveStatusId}>
@@ -191,7 +196,7 @@ function StatusTable() {
                         </MenuItem>
                       ))}
                     </Select>
-                    </TableCell>
+                  </TableCell>
                   <TableCell>
                     <Button
                       color="primary"
@@ -201,10 +206,10 @@ function StatusTable() {
                       Edit
                     </Button>
                     <Button
-                    sx={{ m: 1 }}
+                      sx={{ m: 1 }}
                       color="secondary"
                       variant="contained"
-                      onClick={() => handleUpdate()}
+                      onClick={() => handleUpdate(row.appliedLeaveTypeId)}
                     >
                       Update
                     </Button>

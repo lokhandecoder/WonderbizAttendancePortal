@@ -122,11 +122,13 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
   }, [formData.leaveTypeId, formData.endDate, formData.startDate]);
 
   useEffect(() => {
+    // const EmployeeID = 3;
+
     const fetchData = async () => {
       try {
         const [leaveTypesData, employeeLeaveData] = await Promise.all([
           getLeaveTypes(),
-          GetEmployeeLeaveByEmployeeId(),
+          GetEmployeeLeaveByEmployeeId(), 
         ]);
         const leaveTypes = leaveTypesData.data;
         setLeaveTypes(leaveTypes);
