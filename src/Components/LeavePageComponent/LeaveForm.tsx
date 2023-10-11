@@ -34,6 +34,8 @@ import { getLeaveTypes } from "../../Services/LeaveType";
 import { GetEmployeeLeaveByEmployeeId } from "../../Services/EmployeeLeaveServices";
 import { EmployeeLeave } from "../../Model/EmployeeLeave";
 import { GetApplyLeaveById } from "../../Services/EmployeeLeaveApplyServices";
+import { Checkbox, FormControlLabel, FormHelperText } from "@mui/material";
+import useCustomSnackbar from "../CustomComponent/useCustomSnackbar";
 
 dayjs.extend(utc); // Extend Dayjs with UTC plugin
 interface LeaveFormProps {
@@ -44,34 +46,25 @@ const employee = GetEmployeeLeave();
 console.log(employee);
 
 const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
+  const snackbar = useCustomSnackbar();
+  const employeeId = 3;
   const { id } = useParams();
   const appliedLeaveTypeId = id ? parseInt(id, 10) : 0;
   const today = dayjs();
   const todayDate = today.toDate();
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarDateValid, setsnackbarDateValid] = useState(false);
-  const [snackbarLeavetype, setsnackLeavetype] = useState(false);
-  const [submitMessageOpen, setsubmitMessageOpen] = useState(false);
+
+  // const [snackbarDateValid, setsnackbarDateValid] = useState(false);
+  // const [snackbarLeavetype, setsnackLeavetype] = useState(false);
+  // const [snackbarOpen, setSnackbarOpen] = useState(false);
+  // const [submitMessageOpen, setsubmitMessageOpen] = useState(false);
+
+
   const [difference, setdifference] = useState(0);
   const [balanceLeave, setBalanceLeave] = useState(0);
   const [applyLeaveDefaultValue, setApplyLeaveDefaultValue] = useState(1); // Default value for Apply Leave dropdown
   const [applyLeaveReadOnly, setApplyLeaveReadOnly] = useState(false); // Readonly state for Apply Leave dropdown
 
-
-  const handleLeaveType = () => {
-    setsnackLeavetype(false);
-  };
-  const handleCloseSnackbar = () => {
-    setSnackbarOpen(false);
-  };
-  const handleCloseDateValid = () => {
-    setsnackbarDateValid(false);
-  };
-  const handleCloseSubmitMessage = () => {
-    setsubmitMessageOpen(false);
-  };
-
-  const [formData, setFormData] = useState<LeaveFormData>({
+  const initialFormData: LeaveFormData = {
     appliedLeaveTypeId: appliedLeaveTypeId,
     leaveTypeId: 0,
     leaveType: null,
@@ -82,7 +75,25 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
     applyLeaveDay: 0,
     remaingLeave: 0,
     leaveStatusId: 2,
-  });
+    employeeId: employeeId,
+    isHalfDay: false,
+  };
+  const [formData, setFormData] = useState<LeaveFormData>(initialFormData);
+
+  // const [formData, setFormData] = useState<LeaveFormData>({
+  //   appliedLeaveTypeId: appliedLeaveTypeId,
+  //   leaveTypeId: 0,
+  //   leaveType: null,
+  //   startDate: todayDate,
+  //   endDate: todayDate,
+  //   leaveReason: "",
+  //   balanceLeave: 0,
+  //   applyLeaveDay: 0,
+  //   remaingLeave: 0,
+  //   leaveStatusId: 2,
+  //   employeeId: employeeId,
+  //   isHalfDay: false,
+  // });
   const isWeekend = (date: Dayjs) => {
     const day = date.day();
 
@@ -91,7 +102,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
 
   const [leaveTypes, setLeaveTypes] = useState<LeaveType[]>([]);
   const [employeeLeaves, setemployeeLeaves] = useState<EmployeeLeave[]>([]);
-
+  const [errors, setErrors] = useState<Partial<Record<keyof LeaveFormData, string>>>({});
   const {
     handleSelectChange,
     handleInputChange,
@@ -99,27 +110,35 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
     handleClear,
     Test,
     handleSubmit,
+    handleIsHalfDayChange,
   } = LeaveApplyUtilities(
     formData,
     setFormData,
     todayDate,
     onSubmit,
-    setSnackbarOpen,
-    setsubmitMessageOpen,
-    setsnackbarDateValid,
-    setsnackLeavetype,
+    //setSnackbarOpen,
+    //setsubmitMessageOpen,
+    //setsnackbarDateValid,
+    //setsnackLeavetype,
     difference,
     setdifference,
     balanceLeave,
     setBalanceLeave,
-
     employeeLeaves,
-    setemployeeLeaves
+    setemployeeLeaves,
+    errors,
+    setErrors,
+    snackbar,initialFormData
   );
 
   useEffect(() => {
     Test();
-  }, [formData.leaveTypeId, formData.endDate, formData.startDate]);
+  }, [
+    formData.leaveTypeId,
+    formData.endDate,
+    formData.startDate,
+    formData.isHalfDay,
+  ]);
 
   useEffect(() => {
     // const EmployeeID = 3;
@@ -128,7 +147,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
       try {
         const [leaveTypesData, employeeLeaveData] = await Promise.all([
           getLeaveTypes(),
-          GetEmployeeLeaveByEmployeeId(), 
+          GetEmployeeLeaveByEmployeeId(),
         ]);
         const leaveTypes = leaveTypesData.data;
         setLeaveTypes(leaveTypes);
@@ -149,6 +168,8 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
             remaingLeave: applyLeaveTemp.remaingLeave,
             balanceLeave: applyLeaveTemp.balanceLeave,
             leaveStatusId: applyLeaveTemp.leaveStatusId,
+            employeeId: employeeId,
+            isHalfDay: false,
           });
         }
       } catch (error) {
@@ -186,7 +207,11 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                 columnSpacing={{ xs: 1, sm: 2, md: 3 }}
               >
                 <Grid item xs={12} sm={4} md={3} lg={2}>
-                  <FormControl fullWidth sx={{ mt: 1 }}>
+                  <FormControl
+                    fullWidth
+                    sx={{ mt: 1 }}
+                    error={!!errors.leaveTypeId}
+                  >
                     <InputLabel id="leaveType">Leave Type</InputLabel>
                     <Select
                       labelId="leaveType"
@@ -203,12 +228,15 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                         </MenuItem>
                       ))}
                     </Select>
+                    {!!errors.leaveTypeId && (
+                      <FormHelperText>{errors.leaveTypeId}</FormHelperText>
+                    )}
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={4} md={3} lg={2}>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DemoContainer components={["DatePicker"]}>
-                      <FormControl fullWidth>
+                      <FormControl fullWidth error={!!errors.startDate}>
                         <DatePicker
                           label="Start Date"
                           shouldDisableDate={isWeekend}
@@ -223,11 +251,14 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                             }
                           }}
                         />
+                        {!!errors.startDate && (
+                          <FormHelperText>{errors.startDate}</FormHelperText>
+                        )}
                       </FormControl>
                     </DemoContainer>
                   </LocalizationProvider>
                 </Grid>
-                <Grid item xs={12} sm={4} md={3} lg={2}>
+                {/* <Grid item xs={12} sm={4} md={3} lg={2}>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DemoContainer components={["DatePicker"]}>
                       <FormControl fullWidth>
@@ -248,62 +279,49 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                       </FormControl>
                     </DemoContainer>
                   </LocalizationProvider>
+                </Grid> */}
+                <Grid item xs={12} sm={4} md={3} lg={2}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DemoContainer components={["DatePicker"]}>
+                      <FormControl fullWidth error={!!errors.endDate}>
+                        <DatePicker
+                          label="End Date"
+                          shouldDisableDate={isWeekend}
+                          value={
+                            formData.endDate
+                              ? dayjs.utc(formData.endDate)
+                              : today
+                          }
+                          onChange={(date) => {
+                            if (!formData.isHalfDay) {
+                              // Only allow changing the end date if not half-day
+                              if (date) {
+                                handleDateChange("endDate", date.toDate());
+                              }
+                            }
+                          }}
+                          disabled={formData.isHalfDay} // Disable the DatePicker when isHalfDay is checked
+                        />
+                        {!!errors.endDate && (
+                          <FormHelperText>{errors.endDate}</FormHelperText>
+                        )}
+                      </FormControl>
+                    </DemoContainer>
+                  </LocalizationProvider>
                 </Grid>
-                {/* <Grid item xs={12} sm={4} md={3} lg={2}>
-                  <FormControl fullWidth sx={{ mt: 1 }}>
-                    <InputLabel id="applyLeaveDay">Apply Leave</InputLabel>
-                    <Select
-                      labelId="applyLeaveDay"
-                      id="applyLeaveDay"
-                      value={formData.applyLeaveDay}
-                      label="Apply Leave"
-                      name="applyLeaveDay"
-                      onChange={(event) => {
-                        const value = parseFloat(event.target.value as string);
-                        const newApplyLeaveDay = value;
 
-                        // Calculate the change in balanceLeave based on the selected applyLeaveDay
-                        const balanceLeaveChange = value === 0.5 ? -0.5 : -1;
+                <Grid item xs={12} sm={4} md={3} lg={2}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={formData.isHalfDay} // Set the checked state of the checkbox
+                        onChange={handleIsHalfDayChange} // Attach the onChange event
+                      />
+                    }
+                    label="Is half day"
+                  />
+                </Grid>
 
-                        setFormData({
-                          ...formData,
-                          applyLeaveDay: newApplyLeaveDay,
-                          balanceLeave: balanceLeave + balanceLeaveChange,
-                        });
-                      }}
-                    >
-                      <MenuItem value={0.5}>Half Day</MenuItem>
-                      <MenuItem value={1}>Full Day</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid> */}
-
-                {/* <Grid item xs={12} sm={4} md={3} lg={2}>
-                  <FormControl fullWidth sx={{ mt: 1 }}>
-                    <InputLabel id="DayType">Apply Leave</InputLabel>
-                    <Select
-                      labelId="DayType"
-                      id="DayType"
-                      value={formData.applyLeaveDay}
-                      label="DayType"
-                      name="DayType"
-                      onChange={(event) => {
-                        const value = parseFloat(event.target.value as string);
-                        const balanceLeaveChange = value === 0.5 ? -0.5 : -1;
-                        setFormData({
-                          ...formData,
-                          applyLeaveDay:value,
-                          remaingLeave: formData.remaingLeave - balanceLeaveChange, // Use the defined remaingLeave variable here
-                        });
-                      }}
-                      defaultValue={applyLeaveDefaultValue} // Set default value
-          readOnly={applyLeaveReadOnly} // Set readonly state
-                    >
-                      <MenuItem value={0.5}>Half Day</MenuItem>
-                      <MenuItem value={1}>Full Day</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid> */}
                 <Grid item xs={12} sm={4} md={3} lg={2}>
                   <TextField
                     sx={{ mt: 1 }}
@@ -316,23 +334,16 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={4} md={3} lg={2}>
-                  <TextField
-                    sx={{ mt: 1 }}
-                    id="AppliedLeaves"
-                    name="AppliedLeaves"
-                    label="Applied Leaves"
-                    aria-readonly
-                    error={formData.applyLeaveDay > formData.balanceLeave}
-                    value={formData.applyLeaveDay}
-                    fullWidth
-                  />
-                  {formData.balanceLeave < formData.applyLeaveDay ? (
-                    <span style={{ color: "red" }}>
-                      You dont have sufficient leaves
-                    </span>
-                  ) : (
-                    <span></span>
-                  )}
+                <TextField error={!!errors.applyLeaveDay}
+                      sx={{ mt: 1 }}
+                      id="AppliedLeaves"
+                      name="AppliedLeaves"
+                      label="Applied Leaves"
+                      aria-readonly
+                      value={formData.applyLeaveDay}
+                      fullWidth
+                      helperText={errors.applyLeaveDay || ''}
+                    />
                 </Grid>
                 <Grid item xs={12} sm={4} md={3} lg={2}>
                   <TextField
@@ -359,7 +370,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
               fullWidth
             />
           </CardContent>
-          <CardActions style={{ justifyContent: 'right' }}>
+          <CardActions style={{ justifyContent: "right" }}>
             <Button
               type="submit"
               size="large"
@@ -379,61 +390,19 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
           </CardActions>
         </Card>
         <Snackbar
-          open={snackbarOpen}
-          autoHideDuration={6000} // Adjust the duration as needed
-          onClose={handleCloseSnackbar}
+        open={snackbar.open}
+        autoHideDuration={snackbar.duration}
+        onClose={snackbar.handleSnackbarClose}
+        anchorOrigin={snackbar.position}
+      >
+        <Alert
+          onClose={snackbar.handleSnackbarClose}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
         >
-          <Alert
-            elevation={6}
-            variant="filled"
-            severity="error"
-            onClose={handleCloseSnackbar}
-          >
-            You do not have sufficient leaves.
-          </Alert>
-        </Snackbar>
-        <Snackbar
-          open={submitMessageOpen}
-          autoHideDuration={6000} // Adjust the duration as needed
-          onClose={handleCloseSubmitMessage}
-        >
-          <Alert
-            elevation={6}
-            variant="filled"
-            severity="success"
-            onClose={handleCloseSubmitMessage}
-          >
-            Leave Applied Successfully
-          </Alert>
-        </Snackbar>
-        <Snackbar
-          open={snackbarDateValid}
-          autoHideDuration={6000} // Adjust the duration as needed
-          onClose={handleCloseDateValid}
-        >
-          <Alert
-            elevation={6}
-            variant="filled"
-            severity="error"
-            onClose={handleCloseDateValid}
-          >
-            Date is Invalid
-          </Alert>
-        </Snackbar>
-        <Snackbar
-          open={snackbarLeavetype}
-          autoHideDuration={6000} // Adjust the duration as needed
-          onClose={handleLeaveType}
-        >
-          <Alert
-            elevation={6}
-            variant="filled"
-            severity="error"
-            onClose={handleLeaveType}
-          >
-            Select Leave Type
-          </Alert>
-        </Snackbar>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
       </form>
     </>
   );

@@ -15,7 +15,18 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import { LeaveStatus } from "../../Model/LeaveStatus";
 import { API_URL } from "../../APIConfig";
-import { GetAppliedLeavesAsync } from "../../Services/EmployeeLeaveApplyServices";
+import {
+  GetAppliedLeavesAsync,
+  UpdateIsApprovedAsync,
+  UpdateIsRejectedAsync,
+} from "../../Services/EmployeeLeaveApplyServices";
+import { IconButton } from "@mui/material";
+import ModeEditOutlinedIcon from "@mui/icons-material/ModeEditOutlined";
+import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
+import DoneAllOutlinedIcon from "@mui/icons-material/DoneAllOutlined";
+import ThumbDownOffAltOutlinedIcon from "@mui/icons-material/ThumbDownOffAltOutlined";
+import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
+import UnpublishedOutlinedIcon from "@mui/icons-material/UnpublishedOutlined";
 
 interface Row {
   appliedLeaveTypeId?: number;
@@ -28,9 +39,12 @@ interface Row {
   applyLeaveDay: number;
   remaingLeave: number;
   leaveStatusId: number;
+  isRejected: boolean;
+  isApproved: boolean;
 }
 
 function StatusTable() {
+  const employeeId = 3; // Replace with the actual employee ID
   const [data, setData] = useState<Row[]>([]); // Specify the type for data
   const navigate = useNavigate();
   const [leaveTypes, setLeaveTypes] = useState<LeaveType[]>([]);
@@ -75,7 +89,6 @@ function StatusTable() {
   useEffect(() => {
     const FetchList = async () => {
       try {
-        const employeeId = 3; // Replace with the actual employee ID
         const fetchData = await GetAppliedLeavesAsync();
         const fetched = fetchData.data;
         if (Array.isArray(fetched)) {
@@ -115,7 +128,25 @@ function StatusTable() {
 
     return `${day}/${month}/${year}`;
   }
-  useEffect(() => {
+
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const [LeaveStatus] = await Promise.all([getLeaveStatus()]);
+  //       const leavestatuss = LeaveStatus.data;
+  //       setLeaveStatus(leavestatuss);
+  //     } catch (error) {
+  //       console.error("Failed to fetch data: ", (error as Error).message);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
+
+
+    
+
     const fetchData = async () => {
       try {
         const [LeaveStatus] = await Promise.all([getLeaveStatus()]);
@@ -125,10 +156,25 @@ function StatusTable() {
         console.error("Failed to fetch data: ", (error as Error).message);
       }
     };
+  
 
+  const onLeaveApprove = async (appliedLeaveTypeId: number) => {
+    const isApproved = true;
+    const data = await UpdateIsApprovedAsync(appliedLeaveTypeId, isApproved);
     fetchData();
-  }, []);
+  };
+  const onLeaveCancel = (appliedLeaveTypeId: number) => {};
+  const onLeaveReject = async (appliedLeaveTypeId: number) => {
+    const isApproved = true;
+    const data = await UpdateIsRejectedAsync(appliedLeaveTypeId, isApproved);
+    fetchData();
+  };
+  const onLeaveEdit = (appliedLeaveTypeId: number) => {};
+  const onLeaveDelete = (appliedLeaveTypeId: number) => {};
 
+  useEffect(() => {
+    fetchData(); // Call fetchData when the component mounts
+  }, []);
   return (
     <TableContainer>
       <Table sx={{ minWidth: 700 }} aria-label="simple table">
@@ -141,8 +187,10 @@ function StatusTable() {
             <TableCell>Balance Leaves</TableCell>
             <TableCell>Applied Days</TableCell>
             <TableCell>Remaining Leaves</TableCell>
-            <TableCell>Status</TableCell>
+            {/* <TableCell>Status</TableCell> */}
             <TableCell>Action</TableCell>
+            <TableCell>Edit/Delete </TableCell>
+            <TableCell>Approve/Reject </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -178,7 +226,7 @@ function StatusTable() {
                   <TableCell>{row.balanceLeave}</TableCell>
                   <TableCell>{row.applyLeaveDay}</TableCell>
                   <TableCell>{row.remaingLeave}</TableCell>
-                  <TableCell>
+                  {/* <TableCell>
                     <Select
                       labelId="leaveType"
                       id="demo-simple-select"
@@ -189,14 +237,14 @@ function StatusTable() {
                         handleSelectStatusChange(event, row.appliedLeaveTypeId)
                       }
                     >
-                      {/* <MenuItem value={0}>None</MenuItem> */}
+                     
                       {leaveStatus.map((type, index) => (
                         <MenuItem key={index} value={type.leaveStatusId}>
                           {type.leaveStatusName}
                         </MenuItem>
                       ))}
                     </Select>
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell>
                     <Button
                       color="primary"
@@ -214,6 +262,83 @@ function StatusTable() {
                       Update
                     </Button>
                   </TableCell>
+
+                  <TableCell>
+                    <IconButton
+                      aria-label="Edit"
+                      onClick={() => onLeaveEdit(row.appliedLeaveTypeId || 0)}
+                    >
+                      <ModeEditOutlinedIcon />
+                    </IconButton>
+
+                    <IconButton
+                      aria-label="Delete"
+                      onClick={() => onLeaveDelete(row.appliedLeaveTypeId || 0)}
+                    >
+                      <DeleteForeverOutlinedIcon />
+                    </IconButton>
+                  </TableCell>
+
+                  <TableCell>
+                    {!row.isApproved && !row.isRejected && (
+                      <>
+                        <IconButton
+                          aria-label="Approve"
+                          onClick={() =>
+                            onLeaveApprove(row.appliedLeaveTypeId || 0)
+                          }
+                        >
+                          <DoneAllOutlinedIcon />
+                        </IconButton>
+
+                        <IconButton
+                          aria-label="Reject"
+                          onClick={() =>
+                            onLeaveReject(row.appliedLeaveTypeId || 0)
+                          }
+                        >
+                          <ThumbDownOffAltOutlinedIcon />
+                        </IconButton>
+                      </>
+                    )}
+
+                    {row.isApproved && row.isRejected ? (
+                      // When both row.isApproved and row.isRejected are true
+                      <><IconButton
+                      aria-label="Approve"
+                      // onClick={() =>
+                      //   onLeaveCancel(row.appliedLeaveTypeId || 0)
+                      // }
+                    >
+                      <UnpublishedOutlinedIcon />
+                    </IconButton></>
+                    ) : (
+                      // When either row.isApproved or row.isRejected is false
+                      <>
+                        {row.isApproved && !row.isRejected && (
+                          <IconButton
+                            aria-label="Approve"
+                            onClick={() =>
+                              onLeaveCancel(row.appliedLeaveTypeId || 0)
+                            }
+                          >
+                            <CancelOutlinedIcon />
+                          </IconButton>
+                        )}
+
+                        {!row.isApproved && row.isRejected && (
+                          <IconButton
+                            aria-label="Reject"
+                            onClick={() =>
+                              onLeaveReject(row.appliedLeaveTypeId || 0)
+                            }
+                          >
+                            <ThumbDownOffAltOutlinedIcon />
+                          </IconButton>
+                        )}
+                      </>
+                    )}
+                  </TableCell>
                 </TableRow>
               ))
             : "No data available"}
@@ -222,5 +347,5 @@ function StatusTable() {
     </TableContainer>
   );
 }
-
+/*UnpublishedOutlinedIcon*/
 export default StatusTable;
