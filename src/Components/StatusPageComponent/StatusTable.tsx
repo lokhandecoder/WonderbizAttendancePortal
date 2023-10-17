@@ -17,6 +17,7 @@ import { LeaveStatus } from "../../Model/LeaveStatus";
 import { API_URL } from "../../APIConfig";
 import {
   GetAppliedLeavesAsync,
+  GetAppliedLeavesByEmpIdAsync,
   UpdateIsApprovedAsync,
   UpdateIsRejectedAsync,
 } from "../../Services/EmployeeLeaveApplyServices";
@@ -89,7 +90,7 @@ function StatusTable() {
   useEffect(() => {
     const FetchList = async () => {
       try {
-        const fetchData = await GetAppliedLeavesAsync();
+        const fetchData = await GetAppliedLeavesByEmpIdAsync();
         const fetched = fetchData.data;
         if (Array.isArray(fetched)) {
           setData(fetched);
@@ -169,7 +170,9 @@ function StatusTable() {
     const data = await UpdateIsRejectedAsync(appliedLeaveTypeId, isApproved);
     fetchData();
   };
-  const onLeaveEdit = (appliedLeaveTypeId: number) => {};
+  const onLeaveEdit = (appliedLeaveTypeId: number) => {
+
+  };
   const onLeaveDelete = (appliedLeaveTypeId: number) => {};
 
   useEffect(() => {
@@ -188,7 +191,7 @@ function StatusTable() {
             <TableCell>Applied Days</TableCell>
             <TableCell>Remaining Leaves</TableCell>
             {/* <TableCell>Status</TableCell> */}
-            <TableCell>Action</TableCell>
+            {/* <TableCell>Action</TableCell> */}
             <TableCell>Edit/Delete </TableCell>
             <TableCell>Approve/Reject </TableCell>
           </TableRow>
@@ -245,7 +248,7 @@ function StatusTable() {
                       ))}
                     </Select>
                   </TableCell> */}
-                  <TableCell>
+                  {/* <TableCell>
                     <Button
                       color="primary"
                       variant="contained"
@@ -261,12 +264,12 @@ function StatusTable() {
                     >
                       Update
                     </Button>
-                  </TableCell>
+                  </TableCell> */}
 
                   <TableCell>
                     <IconButton
                       aria-label="Edit"
-                      onClick={() => onLeaveEdit(row.appliedLeaveTypeId || 0)}
+                      onClick={() => handleEdit(row.appliedLeaveTypeId || 0)}
                     >
                       <ModeEditOutlinedIcon />
                     </IconButton>

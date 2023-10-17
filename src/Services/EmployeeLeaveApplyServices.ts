@@ -41,6 +41,15 @@ export async function GetApplyLeaveById(appliedLeaveTypeId: number): Promise<{ d
       throw new Error('Failed to update leave data: ' + (error as Error).message);
     }
   }
+  export async function GetAppliedLeavesByEmpIdAsync(): Promise<any> {
+    try {
+      const empID = localStorage.getItem("EmployeeID")
+      const response = await axios.get(`${API_URL}appliedLeave/GetAppliedLeavesByEmpIdAsync/${empID}`);
+      return response.data;
+    } catch (error) {
+      throw new Error('Failed to update leave data: ' + (error as Error).message);
+    }
+  }
   export async function updateLeaveStatus(id: number, leaveForm: LeaveFormData): Promise<any> {
     try {
       const response = await axios.put(`${API_URL}UpdateAppliedLeaveAsync/${id}`, leaveForm);

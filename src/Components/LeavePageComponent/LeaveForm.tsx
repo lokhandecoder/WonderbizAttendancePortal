@@ -47,7 +47,10 @@ console.log(employee);
 
 const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
   const snackbar = useCustomSnackbar();
-  const employeeId = 3;
+
+  const employeeIdNumber = localStorage.getItem("EmployeeID");
+  const employeeID: number | null = employeeIdNumber ? parseInt(employeeIdNumber, 10) : 0;
+
   const { id } = useParams();
   const appliedLeaveTypeId = id ? parseInt(id, 10) : 0;
   const today = dayjs();
@@ -75,7 +78,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
     applyLeaveDay: 0,
     remaingLeave: 0,
     leaveStatusId: 2,
-    employeeId: employeeId,
+    employeeId: employeeID,
     isHalfDay: false,
   };
   const [formData, setFormData] = useState<LeaveFormData>(initialFormData);
@@ -168,7 +171,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
             remaingLeave: applyLeaveTemp.remaingLeave,
             balanceLeave: applyLeaveTemp.balanceLeave,
             leaveStatusId: applyLeaveTemp.leaveStatusId,
-            employeeId: employeeId,
+            employeeId: applyLeaveTemp.employeeId,
             isHalfDay: false,
           });
         }
@@ -258,28 +261,6 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                     </DemoContainer>
                   </LocalizationProvider>
                 </Grid>
-                {/* <Grid item xs={12} sm={4} md={3} lg={2}>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DemoContainer components={["DatePicker"]}>
-                      <FormControl fullWidth>
-                        <DatePicker
-                          label="End Date"
-                          shouldDisableDate={isWeekend}
-                          value={
-                            formData.endDate
-                              ? dayjs.utc(formData.endDate)
-                              : today
-                          }
-                          onChange={(date) => {
-                            if (date) {
-                              handleDateChange("endDate", date.toDate());
-                            }
-                          }}
-                        />
-                      </FormControl>
-                    </DemoContainer>
-                  </LocalizationProvider>
-                </Grid> */}
                 <Grid item xs={12} sm={4} md={3} lg={2}>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DemoContainer components={["DatePicker"]}>
@@ -309,7 +290,6 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                     </DemoContainer>
                   </LocalizationProvider>
                 </Grid>
-
                 <Grid item xs={12} sm={4} md={3} lg={2}>
                   <FormControlLabel
                     control={

@@ -1,20 +1,55 @@
+import { useEffect, useState } from "react";
+import { GetEmployeeByIdAsync } from "../../Services/EmployeeServices";
+import { EmployeeModel } from "../../Model/EmployeeModel";
 
 function MainCard() {
+  const [employeeData, setEmployeeData] = useState<EmployeeModel | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const employeeId = localStorage.getItem("EmployeeID");
+
+        if (employeeId !== null && Number(employeeId) > 0) {
+          try {
+            const employeeResult = await GetEmployeeByIdAsync(Number(employeeId));
+            // Assuming employeeResult.data is a single EmployeeModel
+            setEmployeeData(employeeResult.data);
+            console.log(employeeResult.data);
+          } catch (error) {
+            console.error("Error fetching employee data:", error);
+          }
+        } else {
+          console.error("Employee ID is null or not a positive number.");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <>
-      <div className="product-details">
-        <h1>Welcome, Employee Name</h1>
-        <span className="hint-star star">
-          <i className="fa fa-star" aria-hidden="true" />
-          <i className="fa fa-star" aria-hidden="true" />
-          <i className="fa fa-star" aria-hidden="true" />
-          <i className="fa fa-star" aria-hidden="true" />
-          <i className="fa fa-star-o" aria-hidden="true" />
-        </span>
-        <h3>Designation</h3>
-        <h3>Software Engineer</h3>
-        <h3>abc@wonderbiz.in</h3>
-      </div>
+      {employeeData ? (
+        <div className="product-details">
+          <h1>Welcome, {`${employeeData.firstName} ${employeeData.lastName}`}</h1>
+          <span className="hint-star star">
+            <i className="fa fa-star" aria-hidden="true" />
+            <i className="fa fa-star" aria-hidden="true" />
+            <i className="fa fa-star" aria-hidden="true" />
+            <i className="fa fa-star" aria-hidden="true" />
+            <i className="fa fa-star-o" aria-hidden="true" />
+          </span>
+          <h3>Designation</h3>
+          <h3>{employeeData.designationId || "Not specified"}</h3>
+          <h3>{employeeData.emailAddress}</h3>
+          <h3>{employeeData.mobileNo}</h3>
+        </div>
+      ) : (
+        <div>Loading employee data...</div>
+      )}
     </>
   );
 }
