@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import DashBoardPage from "../Pages/DashBoardPage";
 import LeavePage from "../Pages/LeavePage";
@@ -13,13 +13,71 @@ import EmployeePage from "../Pages/EmployeePage";
 import EmployeesPage from "../Pages/EmployeesPage";
 
 function RoutingPgae() {
+  const jsonConfig = {
+    routes: [
+      {
+        path: "/assign",
+        protected: false,
+        component: "AssignManager",
+      },
+      {
+        path: "/login",
+        protected: false,
+        component: "LoginPage",
+      },
+      {
+        path: "/forgotpassword",
+        protected: false,
+        component: "ForgotPasswordPage",
+      },
+      {
+        path: "/updatepassword/:id?",
+        protected: false,
+        component: "UpdatePassword",
+      },
+      {
+        path: "/",
+        component: "DashBoardPage",
+        protected: true,
+        allowedRoles: ["admin", "user"],
+      },
+      {
+        path: "/leave/:id?",
+        component: "LeavePage",
+        protected: true,
+        allowedRoles: ["admin", "user"],
+      },
+      {
+        path: "/status",
+        component: "StatusPage",
+        protected: true,
+        allowedRoles: ["admin", "user"],
+      },
+      {
+        path: "/accountingyear",
+        component: "AccountingYear",
+        protected: true,
+        allowedRoles: ["admin"],
+      },
+      {
+        path: "/employee/:id?",
+        component: "EmployeePage",
+        protected: true,
+        allowedRoles: ["admin"],
+      },
+      {
+        path: "/employees",
+        component: "EmployeesPage",
+        protected: true,
+        allowedRoles: ["admin"],
+      },
+    ],
+  };
+
   return (
     <>
       <BrowserRouter>
         <Routes>
-          {/* <Route path="/" element={<DashBoardPage />}></Route> */}
-          {/* <Route path="/leave/:id?" element={<LeavePage />} /> */}
-          {/* <Route path="/status" element={<StatusPage />}></Route> */}
           <Route path="/assign" element={<AssignManager />}></Route>
           <Route path="/login" element={<LoginPage />}></Route>
           <Route
@@ -33,7 +91,7 @@ function RoutingPgae() {
           <Route
             path="/"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["admin", "user"]}>
                 <DashBoardPage />
               </ProtectedRoute>
             }
@@ -41,7 +99,7 @@ function RoutingPgae() {
           <Route
             path="/leave/:id?"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["admin", "user"]}>
                 <LeavePage />
               </ProtectedRoute>
             }
@@ -49,7 +107,7 @@ function RoutingPgae() {
           <Route
             path="/status"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["admin", "user"]}>
                 <StatusPage />
               </ProtectedRoute>
             }
@@ -57,29 +115,32 @@ function RoutingPgae() {
           <Route
             path="/accountingyear"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["admin"]}>
                 <AccountingYear />
               </ProtectedRoute>
             }
           />
-        <Route
+          <Route
             path="/employee/:id?"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["admin"]}>
                 <EmployeePage />
               </ProtectedRoute>
             }
           />
-        <Route
+          <Route
             path="/employees"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["admin"]}>
                 <EmployeesPage />
               </ProtectedRoute>
             }
           />
         </Routes>
       </BrowserRouter>
+
+
+
     </>
   );
 }

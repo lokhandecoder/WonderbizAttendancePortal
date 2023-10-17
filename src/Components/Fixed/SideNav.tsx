@@ -25,6 +25,7 @@ import Menu from "@mui/material/Menu";
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import BadgeIcon from '@mui/icons-material/Badge';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import SideNavLink from "./SideNavLink";
 
 const drawerWidth = 240;
 
@@ -199,7 +200,8 @@ export default function MiniDrawer() {
           </IconButton>
         </DrawerHeader>
         <Divider />
-        <List>
+        <SideNavLink open={open} />
+        {/* <List>
         <ListItem
             disablePadding
             sx={{ display: "block" }}
@@ -359,7 +361,7 @@ export default function MiniDrawer() {
               <ListItemText primary={"Employees List"} sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
-        </List>
+        </List> */}
       </Drawer>
     </Box>
   );

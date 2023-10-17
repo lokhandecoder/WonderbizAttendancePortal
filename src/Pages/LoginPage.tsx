@@ -1,4 +1,6 @@
 import * as React from "react";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useState, useEffect } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -58,24 +60,23 @@ export default function LoginPage() {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     let updatedFieldErrors = { ...fieldErrors };
-  
+
     // Clear the error for the email and password fields when the user starts typing
-    if (name === 'email' && value.trim() !== '') {
-      updatedFieldErrors = { ...updatedFieldErrors, email: '' };
+    if (name === "email" && value.trim() !== "") {
+      updatedFieldErrors = { ...updatedFieldErrors, email: "" };
     }
-  
-    if (name === 'password' && value.trim() !== '') {
-      updatedFieldErrors = { ...updatedFieldErrors, password: '' };
+
+    if (name === "password" && value.trim() !== "") {
+      updatedFieldErrors = { ...updatedFieldErrors, password: "" };
     }
-  
+
     setFieldErrors(updatedFieldErrors);
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
     }));
   };
-  
-  
+
   // Function to check if the email is valid
   const isValidEmail = (email: string) => {
     // Implement your email validation logic here
@@ -96,11 +97,17 @@ export default function LoginPage() {
           if (response.data.status === 200) {
             localStorage.setItem("EmployeeID", response.data.data.employeeId);
             Navigate("/");
+            toast.success("Login successful!");
+
           }
+          toast.error("Login failed. Please try again.");
+
         })
         .catch((error) => {
           console.error("Error submitting:", error);
           setSubmitMessage("Login failed. Please try again.");
+          toast.error("Login failed. Please try again.");
+
         });
     }
   };
@@ -186,17 +193,6 @@ export default function LoginPage() {
             >
               Sign In
             </Button>
-            {submitMessage && (
-              <Typography
-                variant="body1"
-                color={
-                  submitMessage.includes("successful") ? "success" : "error"
-                }
-                align="center"
-              >
-                {submitMessage}
-              </Typography>
-            )}
             <Grid container>
               <Grid item xs>
                 <Link href="/forgotpassword" variant="body2">
@@ -212,6 +208,8 @@ export default function LoginPage() {
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
+        <ToastContainer position="top-center" autoClose={5000} />
+
       </Container>
     </ThemeProvider>
   );
