@@ -106,6 +106,9 @@ export default function UpdatePassword() {
           { vertical: "top", horizontal: "center" },
           5000
         );
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 2000);
         // Add any additional handling or redirection logic here
       })
       .catch((error) => {

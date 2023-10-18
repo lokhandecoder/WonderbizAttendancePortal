@@ -57,7 +57,7 @@ import {
                 rowSpacing={2}
                 columnSpacing={{ xs: 1, sm: 2, md: 3 }}
               >
-                <Grid item xs={3}>
+                <Grid item xs={3} sx={{ mt : "-7px"}} >
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DemoContainer components={["DatePicker"]}>
                       <FormControl fullWidth>
@@ -109,7 +109,7 @@ import {
                     helperText={fieldErrors.lastName}
                   />
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={3} sx={{ mt : "-7px"}}>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DemoContainer components={["DatePicker"]}>
                       <FormControl fullWidth>

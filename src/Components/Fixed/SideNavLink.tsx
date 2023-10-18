@@ -6,6 +6,7 @@ import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
 import { useNavigate } from 'react-router-dom';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 interface MenuItem {
     label: string;
@@ -42,6 +43,7 @@ interface MenuItem {
       case 'Dashboard':
         return <SpaceDashboardIcon />;
       case 'Apply for Leave':
+        return <ExitToAppIcon />
         // Return the icon component for "Apply for Leave"
         // return <YourApplyForLeaveIconComponent />;
       case 'Status':
