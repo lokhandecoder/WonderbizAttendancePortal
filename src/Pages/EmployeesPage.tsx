@@ -82,8 +82,9 @@ import {
                       <TableCell>{row.dateOfBirth}</TableCell>
                       <TableCell>{row.emailAddress}</TableCell>
                       <TableCell>{row.mobileNo}</TableCell>
-                      <TableCell>{row.genderId}</TableCell>
-                      <TableCell>{row.designationId}</TableCell>
+                      {/* <TableCell>{row.gender.genderCode}</TableCell> */}
+                      <TableCell>{row.gender ? row.gender.genderName: 'N/A'}</TableCell> 
+                     <TableCell>{row.designation ? row.designation.designationName: 'N/A'}</TableCell> 
                       <TableCell>
                         <IconButton
                           aria-label="Edit"

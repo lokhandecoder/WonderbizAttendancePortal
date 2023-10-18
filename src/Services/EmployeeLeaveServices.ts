@@ -9,8 +9,11 @@ import { API_URL } from '../APIConfig';
 export async function GetEmployeeLeaveByEmployeeId(): Promise<{ data: EmployeeLeave[]}> {
   try {
   //  const response = await axios.get<LeaveType[]>(`${API_URL}/GetAllLeaveTypes`);
-  const ID = localStorage.getItem("EmployeeID")
+  const ID = localStorage.getItem("EmployeeID");
+  // alert(ID);
   const response = await axios.get<{ data: EmployeeLeave[] }>(`${API_URL}EmployeeLeave/GetEmployeeLeaveByEmployeeId/${ID}`);
+
+  // alert(JSON.stringify(response.data));
     return response.data;
     
   } catch (error) {

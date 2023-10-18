@@ -1,3 +1,6 @@
+import { DesignationModel } from "./DesignationModel";
+import { GenderModel } from "./GenderModel";
+
 export interface EmployeeModel {
     employeeId: number,
       firstName: string;
@@ -9,4 +12,12 @@ export interface EmployeeModel {
       genderId: number;
       designationId: number;
       isActive: boolean;
+      designation : DesignationModel | null;
+      gender : GenderModel | null;
+      // gender: {
+      //   designationName: string | null; // Adjust the type accordingly
+      // };
+      // gender: {
+      //   genderCode: string | null;
+      // }
     }

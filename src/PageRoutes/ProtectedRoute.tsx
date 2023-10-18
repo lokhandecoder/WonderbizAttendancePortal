@@ -25,7 +25,7 @@ const ProtectedRoute = ({ children,allowedRoles   }: ProtectedRouteProps) => {
   const userHasRequiredRole = () => {
     // Implement your logic to check if the user's role is allowed for this route
     // Compare user's role with the allowed roles and return true or false accordingly
-    const userRole = "user"; // Replace with actual logic to get user's role
+    const userRole = "admin"; // Replace with actual logic to get user's role
 
     return allowedRoles.includes(userRole);
   };

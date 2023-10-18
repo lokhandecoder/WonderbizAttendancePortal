@@ -33,7 +33,7 @@ interface MenuItem {
       }
       
       // Example usage
-      const roleToFilter = 'user'; // Replace with the desired role
+      const roleToFilter = 'admin'; // Replace with the desired role
       const filteredMenuItems = filterMenuItemsByRole(menuItems, roleToFilter);
       console.log(filteredMenuItems);
 

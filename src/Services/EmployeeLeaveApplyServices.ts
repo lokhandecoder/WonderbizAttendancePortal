@@ -61,7 +61,7 @@ export async function GetApplyLeaveById(appliedLeaveTypeId: number): Promise<{ d
 
   export async function UpdateIsRejectedAsync(appliedLeaveTypeId: number, isRejected: boolean): Promise<any> {
     try {
-      const response = await axios.put(`${API_URL}AppliedLeave/UpdateIsRejectedAsync/${appliedLeaveTypeId}/${isRejected}`);
+      const response = await axios.get(`${API_URL}AppliedLeave/UpdateIsRejectedAsync/${appliedLeaveTypeId}/${isRejected}`);
       return response.data;
     } catch (error) {
       throw new Error('Failed to update leave data: ' + (error as Error).message);
@@ -70,7 +70,8 @@ export async function GetApplyLeaveById(appliedLeaveTypeId: number): Promise<{ d
   
   export async function UpdateIsApprovedAsync(appliedLeaveTypeId: number, isApproved: boolean): Promise<any> {
     try {
-      const response = await axios.put(`${API_URL}AppliedLeave/UpdateIsApprovedAsync/${appliedLeaveTypeId}/${isApproved}`);
+     
+      const response = await axios.get(`${API_URL}AppliedLeave/UpdateIsApprovedAsync/${appliedLeaveTypeId}/${isApproved}`);
       return response.data;
     } catch (error) {
       throw new Error('Failed to update leave data: ' + (error as Error).message);

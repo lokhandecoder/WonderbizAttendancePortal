@@ -42,10 +42,13 @@ function MainCard() {
             <i className="fa fa-star" aria-hidden="true" />
             <i className="fa fa-star-o" aria-hidden="true" />
           </span>
-          <h3>Designation</h3>
-          <h3>{employeeData.designationId || "Not specified"}</h3>
-          <h3>{employeeData.emailAddress}</h3>
-          <h3>{employeeData.mobileNo}</h3>
+          <h3>
+  Designation: {employeeData.designation ? employeeData.designation.designationName : 'N/A'}
+</h3>
+          <h3>Date of Birth: {employeeData.dateOfBirth}</h3>
+          <h3>Email : {employeeData.emailAddress}</h3>
+          <h3>Conatct No: {employeeData.mobileNo}</h3>
+          <h3>Date of Joining: {employeeData.dateOfJoining}</h3>
         </div>
       ) : (
         <div>Loading employee data...</div>

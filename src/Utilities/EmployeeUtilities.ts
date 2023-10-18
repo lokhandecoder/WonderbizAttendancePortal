@@ -29,6 +29,15 @@ export const EmployeeUtilities = (employeeId: number) => {
     genderId: 0,
     designationId: 0,
     isActive: false,
+    designation : null,
+    gender : null
+    // designation: {
+    //   designationName: null, // Adjust the type accordingly
+    // },
+    // gender: {
+    //   genderCode: null,
+    // }
+
   });
 
 
