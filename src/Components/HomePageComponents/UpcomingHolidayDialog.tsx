@@ -11,8 +11,7 @@ import Card from "@mui/material/Card";
 import UpcomingTable from "./UpcomingTable";
 import Typography from "@mui/material/Typography";
 import CardMedia from "@mui/material/CardMedia";
-import holidayimage from '../../Resources/Images/holiday.png'
-
+import holidayimage from "../../Resources/Images/holiday.png";
 
 function UpcomingHolidayDialog() {
   const [open, setOpen] = React.useState(false);
@@ -94,22 +93,21 @@ function UpcomingHolidayDialog() {
           borderRadius: 6,
         }}
       >
-                <CardContent>
-
-        <Typography
-          sx={{ fontSize: 24, color: "white" }}
-          color="text.secondary"
-          gutterBottom
-        >
-          01
-        </Typography>
-        <CardMedia
-          component="img"
-          height="100"
-          image={holidayimage}
-          alt="green iguana"
-          style={{ maxWidth: "100px", filter: "brightness(0) invert(1)" }}
-        />
+        <CardContent>
+          <Typography
+            sx={{ fontSize: 24, color: "white" }}
+            color="text.secondary"
+            gutterBottom
+          >
+            01
+          </Typography>
+          <CardMedia
+            component="img"
+            height="100"
+            image={holidayimage}
+            alt="green iguana"
+            style={{ maxWidth: "100px", filter: "brightness(0) invert(1)" }}
+          />
           <Button onClick={handleClickOpen} sx={{ color: "white" }}>
             Upcoming Holidays
           </Button>

@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { ChangeEvent } from "react";
-import Button from "@mui/material/Button";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
@@ -8,15 +6,11 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { LeaveType } from "../../Database/LeaveType";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { getLeaveStatus, getLeaveTypes } from "../../Services/LeaveType";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
 import { LeaveStatus } from "../../Model/LeaveStatus";
-import { API_URL } from "../../APIConfig";
 import {
-  GetAppliedLeavesAsync,
   GetAppliedLeavesByEmpIdAsync,
   UpdateIsApprovedAsync,
   UpdateIsRejectedAsync,
@@ -162,6 +156,7 @@ function StatusTable() {
   const onLeaveApprove = async (appliedLeaveTypeId: number) => {
     const isApproved = true;
     const data = await UpdateIsApprovedAsync(appliedLeaveTypeId, isApproved);
+    
     fetchData();
   };
   const onLeaveCancel = (appliedLeaveTypeId: number) => {};

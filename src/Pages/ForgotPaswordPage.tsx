@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
@@ -19,91 +19,18 @@ import Alert from "@mui/material/Alert";
 import avatarImage from "../Resources/Images/wonderbiz-technologies-squareLogo-1693374911041.webp";
 import { API_URL } from "../APIConfig";
 import useCustomSnackbar from "../Components/CustomComponent/useCustomSnackbar";
+import { ForgotPageUtilities } from "../Utilities/ForgotPageUtilities";
+import Copyright from "../Components/Fixed/Copyright";
 
-function Copyright(props: any) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="">
-        Wonderbiz
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
 
-// TODO remove, this demo shouldn't need to reset the theme.
+
 const defaultTheme = createTheme();
 
 export default function ForgotPasswordPage() {
-  const snackbar = useCustomSnackbar();
-  const [submitMessage, setSubmitMessage] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
+  const ForgotPassword = ForgotPageUtilities();
 
-    // Clear the error for the email and password fields when the user starts typing
-    if ((name === 'email' || name === 'password') && value.trim() !== '') {
-      setFieldErrors((prevErrors) => ({
-        ...prevErrors,
-        [name]: '',
-      }));
-    }
-
-    // Rest of the existing logic to update form data
-  };
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const formDataObject: { [key: string]: string } = {};
-
-    // Populate the formDataObject with form data
-    data.forEach((value, key) => {
-      formDataObject[key] = value.toString();
-    });
-
-    console.log(formDataObject);
-    const email = formDataObject.email;
-
-    if (!email) {
-      setFieldErrors((prevErrors) => ({
-        ...prevErrors,
-        email: "Email is required.",
-      }));
-      return; // Don't proceed if email is blank
-    }
-
-    // Make a POST request using Axios `${API_URL}employee/UpdateEmployeeAsync`
-    Axios.post(`${API_URL}passwordReset/VerifyEmailAsync`, formDataObject)
-      .then((response) => {
-        console.log("Email Verification Sent Successfully:", response.data);
-        snackbar.showSnackbar(
-          "Rest password link has been sent to your email",
-          "success",
-          { vertical: "top", horizontal: "center" },
-          5000
-        );
-        
-        // Add any additional handling or redirection logic here
-      })
-      .catch((error) => {
-        console.error("Error submitting:", error);
-        snackbar.showSnackbar(
-          "Failed to Change Password",
-          "error",
-          { vertical: "top", horizontal: "center" },
-          5000
-        );
-        // Add error handling logic here
-      });
-  };
+  const { handleInputChange, handleSubmit, fieldErrors, snackbar } =
+    ForgotPassword;
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -117,8 +44,6 @@ export default function ForgotPasswordPage() {
             alignItems: "center",
           }}
         >
-          {/* <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-          </Avatar> */}
           <Avatar
             src={avatarImage}
             sx={{ m: 1, bgcolor: "secondary.main", width: 200, height: 200 }}
@@ -133,53 +58,37 @@ export default function ForgotPasswordPage() {
             noValidate
             sx={{ mt: 1 }}
           >
-           <TextField
-          margin="normal"
-          required
-          fullWidth
-          id="email"
-          label="Email Address"
-          name="email"
-          autoComplete="email"
-          autoFocus
-          onChange={handleInputChange}
-          error={!!fieldErrors.email}
-          helperText={fieldErrors.email}
-        />
-        <Button
-          type="submit"
-          fullWidth
-          variant="contained"
-          sx={{ mt: 3, mb: 2 }}
-        >
-          Verify Email
-        </Button>
-            {submitMessage && (
-              <Typography
-                variant="body1"
-                color={
-                  submitMessage.includes("successful") ? "success" : "error"
-                }
-                align="center"
-              >
-                {submitMessage}
-              </Typography>
-            )}
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              autoFocus
+              onChange={handleInputChange}
+              error={!!fieldErrors.email}
+              helperText={fieldErrors.email}
+            />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Verify Email
+            </Button>
             <Grid container>
               <Grid item xs>
                 <Link href="/login" variant="body2">
                   Back to Sign In
                 </Link>
               </Grid>
-              {/* <Grid item>
-                <Link href="/signup" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid> */}
             </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 8, mb: 4 }} />
+        <Copyright />
         <Snackbar
           open={snackbar.open}
           autoHideDuration={snackbar.duration}

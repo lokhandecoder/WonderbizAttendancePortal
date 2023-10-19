@@ -5,7 +5,11 @@ import { DesignationModel } from "../Model/DesignationModel";
 import { GetGendersAsync } from "../Services/GenderServices";
 import { GenderModel } from "../Model/GenderModel";
 import dayjs, { Dayjs } from "dayjs";
-import { GetEmployeeByIdAsync, createEmployee, updateEmployee } from "../Services/EmployeeServices";
+import {
+  GetEmployeeByIdAsync,
+  createEmployee,
+  updateEmployee,
+} from "../Services/EmployeeServices";
 import useCustomSnackbar from "../Components/CustomComponent/useCustomSnackbar";
 export const EmployeeUtilities = (employeeId: number) => {
   const today = dayjs();
@@ -29,17 +33,9 @@ export const EmployeeUtilities = (employeeId: number) => {
     genderId: 0,
     designationId: 0,
     isActive: false,
-    designation : null,
-    gender : null
-    // designation: {
-    //   designationName: null, // Adjust the type accordingly
-    // },
-    // gender: {
-    //   genderCode: null,
-    // }
-
+    designation: null,
+    gender: null,
   });
-
 
   /*
   const [employeeData, setEmployeeData] = useState<EmployeeModel>({
@@ -64,49 +60,6 @@ export const EmployeeUtilities = (employeeId: number) => {
     setFieldErrors((prev) => ({ ...prev, [fieldName]: null })); // Clear the error when the field changes
   };
 
-  // useEffect(() => {
-  //   // Fetch designation and gender data when the component mounts
-  //   const fetchData = async () => {
-  //     try {
-  //       const designationResult = await GetDesignationsAsync();
-  //       const genderResult = await GetGendersAsync();
-
-  //       const employeeResult = await GetEmployeeByIdAsync(employeeId );
-
-  //       setDesignations(designationResult.data);
-  //       setGenders(genderResult.data);
-  //     } catch (error) {
-  //       // Handle the error (e.g., display an error message to the user)
-  //       console.error("Error fetching data:", error);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
-  // useEffect(() => {
-  //   // Fetch designation and gender data when the component mounts
-  //   const fetchData = async () => {
-  //     try {
-  //       const [designationResult, genderResult, employeeResult] = await Promise.all([
-  //         GetDesignationsAsync(),
-  //         GetGendersAsync(),
-  //         GetEmployeeByIdAsync(employeeId),
-  //       ]);
-  
-  //       setDesignations(designationResult.data);
-  //       setGenders(genderResult.data);
-  //       setEmployeeData(employeeResult.data);
-  //       // You can access employee data from employeeResult.data if needed
-  //       console.log(employeeResult.data);
-  //     } catch (error) {
-  //       // Handle the error (e.g., display an error message to the user)
-  //       console.error("Error fetching data:", error);
-  //     }
-  //   };
-  
-  //   fetchData();
-  // }, [employeeId]);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -114,10 +67,16 @@ export const EmployeeUtilities = (employeeId: number) => {
           GetDesignationsAsync(),
           GetGendersAsync(),
         ]);
-  
-        setDesignations(designationResult.status === 'fulfilled' ? designationResult.value.data : []);
-        setGenders(genderResult.status === 'fulfilled' ? genderResult.value.data : []);
-  
+
+        setDesignations(
+          designationResult.status === "fulfilled"
+            ? designationResult.value.data
+            : []
+        );
+        setGenders(
+          genderResult.status === "fulfilled" ? genderResult.value.data : []
+        );
+
         if (employeeId > 0) {
           try {
             const employeeResult = await GetEmployeeByIdAsync(employeeId);
@@ -132,30 +91,20 @@ export const EmployeeUtilities = (employeeId: number) => {
         console.error("Error fetching data:", error);
       }
     };
-  
+
     fetchData();
   }, [employeeId]);
-  
-  
 
   const handleSubmit = async () => {
-    // Access the field data from the formData object
-    //console.log("Form Data:", employeeData);
     setLoading(true);
     if (isFormValid()) {
-      //const createdEmployee = await createEmployee(employeeData);
-     
-
       const createdEmployee =
-      employeeData.employeeId > 0
-      ? await updateEmployee( employeeData)
-      : await createEmployee(employeeData);
+        employeeData.employeeId > 0
+          ? await updateEmployee(employeeData)
+          : await createEmployee(employeeData);
 
-
-     
       const { data, status, message } = createdEmployee;
 
-      //alert(status);
       if (status === 200) {
         snackbar.showSnackbar(
           message,
@@ -164,7 +113,6 @@ export const EmployeeUtilities = (employeeId: number) => {
           5000
         );
       } else {
-
         if (message.includes("IX_Employees_emailAddress")) {
           snackbar.showSnackbar(
             `The email address associated with this account, ${employeeData.emailAddress}, has already been registered. Please try using a different email address.`,
@@ -172,7 +120,7 @@ export const EmployeeUtilities = (employeeId: number) => {
             { vertical: "top", horizontal: "center" },
             5000
           );
-        }else{
+        } else {
           snackbar.showSnackbar(
             message,
             "error",
@@ -180,7 +128,6 @@ export const EmployeeUtilities = (employeeId: number) => {
             5000
           );
         }
-        
       }
       setLoading(false);
     } else {
@@ -189,11 +136,9 @@ export const EmployeeUtilities = (employeeId: number) => {
     }
   };
   const validateEmail = (email: string): boolean => {
-    // Regular expression for a valid email format
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
     return emailRegex.test(email);
   };
-  // Validation function to check required fields
   const isFormValid = () => {
     const {
       firstName,
@@ -275,6 +220,6 @@ export const EmployeeUtilities = (employeeId: number) => {
     snackbar,
     handleFieldChange,
     handleSubmit,
-    loading
+    loading,
   };
 };

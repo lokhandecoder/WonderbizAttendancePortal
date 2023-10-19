@@ -15,10 +15,6 @@ const LeaveApplyUtilities = (
   setFormData: React.Dispatch<any>,
   todayDate: any,
   onSubmit: any,
-  //setSnackbarOpen: any,
-  //setsubmitMessageOpen: any,
-  //setsnackbarDateValid: any,
-  //setsnackLeavetype: any,
 
   difference: any,
   setdifference: any,
@@ -28,17 +24,7 @@ const LeaveApplyUtilities = (
   employeeLeaves :EmployeeLeave[] ,setemployeeLeaves :any, errors:any,
   setErrors :any, snackbar:any, initialFormData : any ) => {
 
-    // const {
-    //   open,
-    //   message,
-    //   severity,
-    //   handleSnackbarClose,
-    //   showSnackbar,
-    //   position,
-    //   duration,
-    // } = useCustomSnackbar();
 
-    //const snackbar = useCustomSnackbar();
 
 
   const handleSubmit = async (event: React.FormEvent) => {
