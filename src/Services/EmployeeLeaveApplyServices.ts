@@ -1,5 +1,6 @@
-import { API_URL } from "../APIConfig";
+import { API_URL, EmployeeIDByLocalStorage } from "../APIConfig";
 import { LeaveFormData } from "../Model/LeaveFormData";import axios from "axios";
+import { DecryptEmployeeID } from "./EncryptEmplyeeID";
 
 //UpdateAppliedLeaveAsync/18
 // const API_URL = 'https://leaveapplication14.azurewebsites.net/api/employee/';
@@ -43,7 +44,7 @@ export async function GetApplyLeaveById(appliedLeaveTypeId: number): Promise<{ d
   }
   export async function GetAppliedLeavesByEmpIdAsync(): Promise<any> {
     try {
-      const empID = localStorage.getItem("EmployeeID")
+      const empID = DecryptEmployeeID();
       const response = await axios.get(`${API_URL}appliedLeave/GetAppliedLeavesByEmpIdAsync/${empID}`);
       return response.data;
     } catch (error) {

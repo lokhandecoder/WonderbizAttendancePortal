@@ -3,16 +3,17 @@ import Axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
-import { API_URL } from "../APIConfig";
+import { API_URL, secretKey_global } from "../APIConfig";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
-
+import { encryptData } from "../Services/EncryptEmplyeeID";
 
 interface FormData {
   email: string;
   password: string;
 }
 export const LoginPageUtilities = () => {
+
   const [formData, setFormData] = useState<FormData>({
     email: "",
     password: "",
@@ -53,9 +54,11 @@ export const LoginPageUtilities = () => {
         .then((response) => {
           console.log("Successfully submitted:", response.data);
           if (response.data.status === 200) {
-            localStorage.setItem("EmployeeID", response.data.data.employeeId);
-            Navigate("/");
-            toast.success("Login successful!");
+            const employeeId = response.data.data.employeeId.toString();
+            const encryptedEmployeeId = encryptData(employeeId, secretKey_global);
+          localStorage.setItem("EmployeeID", encryptedEmployeeId);
+          window.location.href = "/";
+          toast.success("Login successful!");
           }
           toast.error("Login failed. Please try again.");
         })
@@ -84,7 +87,6 @@ export const LoginPageUtilities = () => {
     setFieldErrors(errors);
     return valid;
   }
-
 
   return {
     handleInputChange,

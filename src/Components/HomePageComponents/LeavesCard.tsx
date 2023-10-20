@@ -33,20 +33,6 @@ function LeavesCard() {
     fetchData();
   }, []);
 
-  // const myArray = [
-  //   {
-  //     type: "Sick leave",
-  //     days: 13,
-  //   },
-  //   {
-  //     type: "Casual Leave",
-  //     days: 13,
-  //   },
-  //   {
-  //     type: "Maternity/Paternity Leave",
-  //     days: 20,
-  //   },
-  // ];
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={2}>
@@ -57,20 +43,22 @@ function LeavesCard() {
           );
 
           return (
-            <Grid xs={4} key={key}>
-              <Card sx={{ minWidth: 275, boxShadow: 4 }}>
+            <Grid xs={3} key={key} >
+              <Card
+                sx={{
+                  minWidth: 275,
+                  boxShadow: 4,
+                  borderRadius: 3,
+                }}
+              >
                 <CardContent>
-                  <Typography
-                    sx={{ fontSize: 24 }}
-                    color="text.secondary"
-                    gutterBottom
-                  >
+                  <Typography sx={{ fontSize: 24 }} color="" gutterBottom>
                     {leaveType.leaveTypeName}
                   </Typography>
-                  <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                  <Typography sx={{ mb: 1.5 }} color="">
                     Total Leaves: {matchingEmployeeLeave?.leaveCount}
                   </Typography>
-                  <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                  <Typography sx={{ mb: 1.5 }} color="">
                     Remaining Leaves: {matchingEmployeeLeave?.balanceLeaves}
                   </Typography>
                 </CardContent>

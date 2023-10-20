@@ -103,7 +103,7 @@ export default function MiniDrawer() {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
   React.useState<null | HTMLElement>(null);
   const theme = useTheme();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const navigate = useNavigate();
@@ -128,6 +128,7 @@ export default function MiniDrawer() {
   const handleSignout = () => {
     localStorage.removeItem("EmployeeID");
     window.location.reload()
+    // navigate("/login")
   }
   const menuId = "primary-search-account-menu";
   const renderMenu = (

@@ -10,6 +10,7 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import CircularProgress from "@mui/material/CircularProgress";
 import axios from "axios";
 import {
   GetEmployeeLeave,
@@ -36,6 +37,8 @@ import { EmployeeLeave } from "../../Model/EmployeeLeave";
 import { GetApplyLeaveById } from "../../Services/EmployeeLeaveApplyServices";
 import { Checkbox, FormControlLabel, FormHelperText } from "@mui/material";
 import useCustomSnackbar from "../CustomComponent/useCustomSnackbar";
+import { EmployeeIDByLocalStorage } from "../../APIConfig";
+import { DecryptEmployeeID } from "../../Services/EncryptEmplyeeID";
 
 dayjs.extend(utc); // Extend Dayjs with UTC plugin
 interface LeaveFormProps {
@@ -47,9 +50,8 @@ console.log(employee);
 
 const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
   const snackbar = useCustomSnackbar();
-
-  const employeeIdNumber = localStorage.getItem("EmployeeID");
-  const employeeID: number | null = employeeIdNumber ? parseInt(employeeIdNumber, 10) : 0;
+  const EMPIDD = DecryptEmployeeID()
+  // const employeeID: number | null = employeeIdNumber ? parseInt(employeeIdNumber, 10) : 0;
 
   const { id } = useParams();
   const appliedLeaveTypeId = id ? parseInt(id, 10) : 0;
@@ -60,6 +62,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
   // const [snackbarLeavetype, setsnackLeavetype] = useState(false);
   // const [snackbarOpen, setSnackbarOpen] = useState(false);
   // const [submitMessageOpen, setsubmitMessageOpen] = useState(false);
+  console.log("Employeeeee ID", EMPIDD);
 
 
   const [difference, setdifference] = useState(0);
@@ -78,7 +81,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
     applyLeaveDay: 0,
     remaingLeave: 0,
     leaveStatusId: 2,
-    employeeId: employeeID,
+    employeeId: parseInt(EMPIDD.toString(), 10), // Convert EMPIDD to a string and then parse it
     isHalfDay: false,
   };
   const [formData, setFormData] = useState<LeaveFormData>(initialFormData);
@@ -113,6 +116,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
     handleClear,
     Test,
     handleSubmit,
+    loading,
     handleIsHalfDayChange,
   } = LeaveApplyUtilities(
     formData,
@@ -298,7 +302,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                         onChange={handleIsHalfDayChange} // Attach the onChange event
                       />
                     }
-                    label="Is half day"
+                    label="Half day"
                   />
                 </Grid>
 
@@ -308,7 +312,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                     id="BalancedLeaves"
                     name="Balanced Leaves"
                     label="Balanced Leaves"
-                    aria-readonly
+                    disabled
                     value={formData.balanceLeave}
                     fullWidth
                   />
@@ -319,7 +323,8 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                       id="AppliedLeaves"
                       name="AppliedLeaves"
                       label="Applied Leaves"
-                      aria-readonly
+                      // aria-readonly
+                      disabled
                       value={formData.applyLeaveDay}
                       fullWidth
                       helperText={errors.applyLeaveDay || ''}
@@ -331,7 +336,8 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
                     id="RemainingLeaves"
                     name="Remaining Leaves"
                     label="Remaining Leaves"
-                    aria-readonly
+                    // aria-readonly
+                    disabled
                     value={formData.remaingLeave}
                     fullWidth
                   />
@@ -342,7 +348,7 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
               sx={{ mt: 1 }}
               id="leaveReason"
               name="leaveReason"
-              label="leaveReason"
+              label="Leave Reason"
               multiline
               rows={4}
               value={formData.leaveReason}
@@ -356,8 +362,16 @@ const LeaveForm: React.FC<LeaveFormProps> = ({ onSubmit }) => {
               size="large"
               variant="contained"
               color="primary"
-            >
-              Apply
+              disabled={loading} // Disable the button when loading
+              >
+                {loading ? (
+                  <div>
+                    Please wait...
+                    <CircularProgress size={24} />
+                  </div>
+                ) : (
+                  "Save"
+                )}
             </Button>
             <Button
               size="large"

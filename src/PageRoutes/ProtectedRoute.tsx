@@ -1,5 +1,7 @@
-import { Navigate, Route } from 'react-router-dom';
+import { Navigate, Route, useNavigate } from 'react-router-dom';
 import { ReactNode, useEffect } from "react";
+import { EmployeeIDByLocalStorage } from '../APIConfig';
+import { DecryptEmployeeID } from '../Services/EncryptEmplyeeID';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -7,24 +9,22 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children,allowedRoles   }: ProtectedRouteProps) => {
+  const navigate = useNavigate()
   const userRole = 'user'; // Replace with actual role retrieval logic
 
   
   useEffect(() => {
-    // Check if the user is authenticated based on localStorage
-    const isUserAuthenticated = localStorage.getItem("EmployeeID") !== null;
+    const isUserAuthenticated = DecryptEmployeeID !== null;
 
     if (!isUserAuthenticated) {
-      // Redirect to login if the user is not authenticated
 
-      window.location.href = "/login";
+      // window.location.href = "/login";
+      navigate("/login");
       
     }
     
   }, []);
   const userHasRequiredRole = () => {
-    // Implement your logic to check if the user's role is allowed for this route
-    // Compare user's role with the allowed roles and return true or false accordingly
     const userRole = "admin"; // Replace with actual logic to get user's role
 
     return allowedRoles.includes(userRole);
@@ -32,8 +32,6 @@ const ProtectedRoute = ({ children,allowedRoles   }: ProtectedRouteProps) => {
 
   return userHasRequiredRole() ? <>{children}</> : <Navigate to="/login" />;
 
-  // Render the children if the user is authenticated
-  // return <>{children}</>;
 };
 
 export default ProtectedRoute;

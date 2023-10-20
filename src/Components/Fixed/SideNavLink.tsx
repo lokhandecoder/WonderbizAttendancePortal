@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { List, ListItem, ListItemButton, ListItemIcon, ListItemText, Tooltip  } from '@mui/material';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import BadgeIcon from '@mui/icons-material/Badge';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
@@ -62,32 +62,33 @@ interface MenuItem {
   return (
     <List>
       {filteredMenuItems.map((item, index) => (
-        <ListItem
-          key={index}
-          disablePadding
-          sx={{ display: 'block' }}
-          onClick={() => navigate(item.path)}
-        >
-          <ListItemButton
-            sx={{
-              minHeight: 48,
-              justifyContent: open ? 'initial' : 'center',
-              px: 2.5
-            }}
+        <Tooltip title={item.label} key={index} arrow>
+          <ListItem
+            disablePadding
+            sx={{ display: 'block' }}
+            onClick={() => navigate(item.path)}
           >
-            <ListItemIcon
+            <ListItemButton
               sx={{
-                minWidth: 0,
-                mr: open ? 3 : 'auto',
-                justifyContent: 'center'
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5
               }}
             >
-              {/* Replace with appropriate icon based on the item */}
-              {getIconForItem(item.label)}
-            </ListItemIcon>
-            <ListItemText primary={item.label} sx={{ opacity: open ? 1 : 0 }} />
-          </ListItemButton>
-        </ListItem>
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center'
+                }}
+              >
+                {/* Replace with appropriate icon based on the item */}
+                {getIconForItem(item.label)}
+              </ListItemIcon>
+              <ListItemText primary={item.label} sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
+        </Tooltip>
       ))}
     </List>
   );

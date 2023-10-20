@@ -2,6 +2,7 @@ import { SelectChangeEvent } from "@mui/material/Select";
 import { EmployeeLeave } from "../Model/EmployeeLeave";
 import { GetEmployeeLeave } from "../Database/LeaveType";
 import { LeaveFormData } from "../Model/LeaveFormData";
+import { useState, useEffect } from "react";
 import { GetLeaveHistory } from "../Database/LeaveHIstory";
 import { Console } from "console";
 import axios from "axios";
@@ -25,9 +26,12 @@ const LeaveApplyUtilities = (
   setErrors :any, snackbar:any, initialFormData : any ) => {
 
 
+    const [loading, setLoading] = useState(false);
 
 
   const handleSubmit = async (event: React.FormEvent) => {
+    setLoading(true);
+
     event.preventDefault();
 
     const isValid = isFormDataValid(formData);
@@ -47,10 +51,12 @@ const LeaveApplyUtilities = (
     if (status ===200){
       //setsubmitMessageOpen(true);
       snackbar.showSnackbar(message, 'success', { vertical: 'top', horizontal: 'center' }, 5000);
+      setLoading(false);
       handleClear();
     }else{
       //setsubmitMessageOpen(true);
       //handleClear();
+      setLoading(false);
       snackbar.showSnackbar(message, 'warning', { vertical: 'top', horizontal: 'center' }, 5000);
     }
 
@@ -229,6 +235,7 @@ const LeaveApplyUtilities = (
     handleClear,
     handleSubmit,
     Test,
+    loading,
     differenceChecker,
     // ValidateEmployeeById,
     handleIsHalfDayChange
