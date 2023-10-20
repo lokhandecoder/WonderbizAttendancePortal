@@ -7,6 +7,7 @@ import useCustomSnackbar from "../Components/CustomComponent/useCustomSnackbar";
 export const UpdatePasswordUtilities = () => {
   const snackbar = useCustomSnackbar();
   const { id } = useParams();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     password: "",
     confirmPassword: "",
@@ -29,6 +30,7 @@ export const UpdatePasswordUtilities = () => {
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    setLoading(true);
     event.preventDefault();
 
     const { password, confirmPassword } = formData;
@@ -46,6 +48,8 @@ export const UpdatePasswordUtilities = () => {
         ...prevErrors,
         confirmPassword: "Please confirm your password.",
       }));
+      setLoading(false);
+
       return;
     }
 
@@ -54,6 +58,8 @@ export const UpdatePasswordUtilities = () => {
         ...prevErrors,
         confirmPassword: "Passwords do not match.",
       }));
+      setLoading(false);
+
       return;
     }
 
@@ -69,6 +75,7 @@ export const UpdatePasswordUtilities = () => {
           { vertical: "top", horizontal: "center" },
           5000
         );
+        setLoading(false);
         setTimeout(() => {
           window.location.href = "/login";
         }, 2000);
@@ -81,6 +88,8 @@ export const UpdatePasswordUtilities = () => {
           { vertical: "top", horizontal: "center" },
           5000
         );
+        setLoading(false);
+
       });
   };
 

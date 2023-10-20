@@ -21,6 +21,8 @@ import { API_URL } from "../APIConfig";
 import useCustomSnackbar from "../Components/CustomComponent/useCustomSnackbar";
 import { ForgotPageUtilities } from "../Utilities/ForgotPageUtilities";
 import Copyright from "../Components/Fixed/Copyright";
+import CircularProgress from "@mui/material/CircularProgress";
+
 
 
 
@@ -29,7 +31,7 @@ const defaultTheme = createTheme();
 export default function ForgotPasswordPage() {
   const ForgotPassword = ForgotPageUtilities();
 
-  const { handleInputChange, handleSubmit, fieldErrors, snackbar } =
+  const { handleInputChange, handleSubmit, fieldErrors, snackbar, loading } =
     ForgotPassword;
 
   return (
@@ -76,8 +78,16 @@ export default function ForgotPasswordPage() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
-            >
-              Verify Email
+              disabled={loading} // Disable the button when loading
+              >
+                {loading ? (
+                  <div>
+                    Please wait...
+                    <CircularProgress size={24} />
+                  </div>
+                ) : (
+                  "Verify Email"
+                )}
             </Button>
             <Grid container>
               <Grid item xs>

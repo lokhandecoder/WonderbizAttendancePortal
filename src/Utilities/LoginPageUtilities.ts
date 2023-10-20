@@ -20,6 +20,8 @@ export const LoginPageUtilities = () => {
   });
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const Navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -46,6 +48,7 @@ export const LoginPageUtilities = () => {
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    setLoading(true);
     event.preventDefault();
     const isFormValid = IsFormValid(formData);
     if (isFormValid) {
@@ -61,10 +64,12 @@ export const LoginPageUtilities = () => {
           toast.success("Login successful!");
           }
           toast.error("Login failed. Please try again.");
+          setLoading(false);
         })
         .catch((error) => {
           console.error("Error submitting:", error);
           toast.error("Login failed. Please try again.");
+          setLoading(false);
         });
     }
   };
@@ -83,7 +88,7 @@ export const LoginPageUtilities = () => {
       errors.password = "Password is required";
       valid = false;
     }
-
+    setLoading(false);
     setFieldErrors(errors);
     return valid;
   }
@@ -93,5 +98,6 @@ export const LoginPageUtilities = () => {
     handleSubmit,
     fieldErrors,
     formData,
+    loading,
   };
 };

@@ -6,6 +6,8 @@ import { API_URL } from "../APIConfig";
 export const ForgotPageUtilities = () => {
   const snackbar = useCustomSnackbar();
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
 
@@ -17,6 +19,7 @@ export const ForgotPageUtilities = () => {
     }
   };
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    setLoading(true);
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const formDataObject: { [key: string]: string } = {};
@@ -33,6 +36,7 @@ export const ForgotPageUtilities = () => {
         ...prevErrors,
         email: "Email is required.",
       }));
+      setLoading(false);
       return;
     }
 
@@ -45,6 +49,8 @@ export const ForgotPageUtilities = () => {
           { vertical: "top", horizontal: "center" },
           5000
         );
+        setLoading(false);
+
       })
       .catch((error) => {
         console.error("Error submitting:", error);
@@ -54,6 +60,8 @@ export const ForgotPageUtilities = () => {
           { vertical: "top", horizontal: "center" },
           5000
         );
+        setLoading(false);
+
       });
   };
 
@@ -62,5 +70,6 @@ export const ForgotPageUtilities = () => {
     handleSubmit,
     fieldErrors,
     snackbar,
+    loading,
   };
 };

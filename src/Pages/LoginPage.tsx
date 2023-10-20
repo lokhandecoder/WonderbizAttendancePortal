@@ -10,6 +10,7 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
+import CircularProgress from "@mui/material/CircularProgress";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import avatarImage from "../Resources/Images/wonderbiz-technologies-squareLogo-1693374911041.webp";
 import { LoginPageUtilities } from "../Utilities/LoginPageUtilities";
@@ -20,7 +21,7 @@ const defaultTheme = createTheme();
 export default function LoginPage() {
   const login = LoginPageUtilities();
 
-  const { handleInputChange, handleSubmit, fieldErrors, formData } = login;
+  const { handleInputChange, handleSubmit, fieldErrors, formData, loading } = login;
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -79,8 +80,16 @@ export default function LoginPage() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
-            >
-              Sign In
+              disabled={loading} // Disable the button when loading
+              >
+                {loading ? (
+                  <div>
+                    Please wait...
+                    <CircularProgress size={24} />
+                  </div>
+                ) : (
+                  "Sign In"
+                )}
             </Button>
             <Grid container>
               <Grid item xs>

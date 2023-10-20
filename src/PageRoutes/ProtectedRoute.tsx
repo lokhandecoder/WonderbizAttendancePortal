@@ -14,7 +14,7 @@ const ProtectedRoute = ({ children,allowedRoles   }: ProtectedRouteProps) => {
 
   
   useEffect(() => {
-    const isUserAuthenticated = DecryptEmployeeID !== null;
+    const isUserAuthenticated = localStorage.getItem("EmployeeID") !== null;
 
     if (!isUserAuthenticated) {
 
