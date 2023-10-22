@@ -12,6 +12,7 @@ interface MenuItem {
     label: string;
     path: string;
     roles?: string[];
+    ToolTiplabel: string;
   }
   
   interface SideNavLinkProps {
@@ -21,12 +22,12 @@ interface MenuItem {
   const SideNavLink = ({ open }: SideNavLinkProps) => {
     const navigate = useNavigate();
     const menuItems: MenuItem[] = [
-        { label: 'Dashboard', path: '/', roles: ['admin', 'user','manager'] },
-        { label: 'Apply for Leave', path: '/leave', roles: ['user','admin','manager'] },
-        { label: 'Status', path: '/status', roles: ['admin', 'manager', 'user'] },
-        { label: 'Accounting Year', path: '/accountingyear', roles: ['admin'] },
-        { label: 'Add Employee', path: '/employee', roles: ['admin'] },
-        { label: 'Employees List', path: '/employees', roles: ['admin'] }
+        { label: 'Dashboard', path: '/', roles: ['admin', 'user','manager'], ToolTiplabel: 'Way to Dashboard' },
+        { label: 'Apply for Leave', path: '/leave', roles: ['user','admin','manager'], ToolTiplabel: 'Want to Apply a Leave'  },
+        { label: 'Status', path: '/status', roles: ['admin', 'manager', 'user'], ToolTiplabel: 'Shows Leave Status'  },
+        { label: 'Accounting Year', path: '/accountingyear', roles: ['admin'], ToolTiplabel: 'Setting Accounting Year'  },
+        { label: 'Add Employee', path: '/employee', roles: ['admin'], ToolTiplabel: 'Dashboard'  },
+        { label: 'Employees List', path: '/employees', roles: ['admin'], ToolTiplabel: 'Dashboard'  }
       ];
       
       function filterMenuItemsByRole(menuItems: MenuItem[], role: string): MenuItem[] {

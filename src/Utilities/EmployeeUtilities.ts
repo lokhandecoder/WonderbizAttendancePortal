@@ -147,8 +147,51 @@ export const EmployeeUtilities = (employeeId: number) => {
       designationId,
       emailAddress,
       mobileNo,
+      dateOfBirth,
+      dateOfJoining,
     } = employeeData;
     let valid = true;
+    const dateFormatRegex = /^\d{2}\/\d{2}\/\d{4}$/;
+
+    // Date of Birth validation
+    if (dateOfBirth === null || dateOfBirth.trim() === "") {
+      setFieldErrors((prev) => ({
+        ...prev,
+        dateOfBirth: "Date of Birth is required",
+      }));
+      valid = false;
+    } else if (
+      !dayjs(dateOfBirth, { format: "DD/MM/YYYY" }).isValid() ||
+      !dateOfBirth.match(dateFormatRegex)
+    ) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        dateOfBirth: "Invalid date format for Date of Birth (dd/mm/yyyy)",
+      }));
+      valid = false;
+    } else {
+      setFieldErrors((prev) => ({ ...prev, dateOfBirth: null }));
+    }
+
+    // Date of Joining validation
+    if (dateOfJoining === null || dateOfJoining.trim() === "") {
+      setFieldErrors((prev) => ({
+        ...prev,
+        dateOfJoining: "Date of Joining is required",
+      }));
+      valid = false;
+    } else if (
+      !dayjs(dateOfJoining, { format: "DD/MM/YYYY" }).isValid() ||
+      !dateOfJoining.match(dateFormatRegex)
+    ) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        dateOfJoining: "Invalid date format for Date of Joining (dd/mm/yyyy)",
+      }));
+      valid = false;
+    } else {
+      setFieldErrors((prev) => ({ ...prev, dateOfJoining: null }));
+    }
 
     if (firstName.trim() === "") {
       setFieldErrors((prev) => ({

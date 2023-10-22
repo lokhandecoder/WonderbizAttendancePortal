@@ -40,6 +40,8 @@ export const UpdatePasswordUtilities = () => {
         ...prevErrors,
         password: "Password is required.",
       }));
+      setLoading(false);
+
       return;
     }
 

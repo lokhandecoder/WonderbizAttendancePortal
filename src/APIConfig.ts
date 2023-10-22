@@ -1,5 +1,7 @@
 // apiConfig.js
-const API_URL = 'http://localhost:5024/api/';
+// const API_URL = 'http://localhost:5024/api/';
+const API_URL = 'http://192.168.1.29:86/api/';
+
 const secretKey_global = "YourSecretKey";
 const API_VERSION = 'v1';
 const API_KEY = 'your-api-key';
